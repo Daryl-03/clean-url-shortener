@@ -15,6 +15,13 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
 }
 
+tasks.register("printVersion") {
+    // Cette tâche sera utilisée par GitHub Actions pour extraire la version.
+    doLast {
+        println(project.version)
+    }
+}
+
 tasks.test {
     useJUnitPlatform()
 }
