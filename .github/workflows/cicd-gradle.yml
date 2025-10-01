@@ -92,12 +92,27 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
 
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
     - name: Trigger Dokploy Deployment
-      uses: benbristow/dokploy-deploy-action@0.0.1
-      with: 
-        auth_token: ${{ secrets.DOKPLOY_AUTH_TOKEN }}
-        application_id: ${{ secrets.DOKPLOY_APPLICATION_ID }}
-        dokploy_url: ${{ secrets.DOKPLOY_URL }}
+      run: |
+        RESPONSE=$(curl -sS -X 'POST' \
+                 -w "\nHTTP_STATUS:%{http_code}" \
+                 '${{ secrets.DOKPLOY_URL }}/api/trpc/application.deploy' \
+                 -H 'accept: application/json' \
+                 -H 'x-api-key: ${{ secrets.DOKPLOY_AUTH_TOKEN }}' \
+                 -H 'Content-Type: application/json' \
+                 -d '{"json": {"applicationId": "${{ secrets.DOKPLOY_APPLICATION_ID }}"}}')
+                 
+        HTTP_STATUS=$(echo "$RESPONSE" | tail -n 1 | sed -e 's/HTTP_STATUS://')
+        RESPONSE_BODY=$(echo "$RESPONSE" | head -n -1)
+  
+        echo "--- Dokploy API Response ---"
+        echo "Status: $HTTP_STATUS"
+        echo "Body: $RESPONSE_BODY"
+        echo "----------------------------"
+  
+        if [[ "$HTTP_STATUS" -ge 200 && "$HTTP_STATUS" -lt 300 ]]; then
+          echo "::notice title=Deployment Triggered::Dokploy deployment successfully triggered (Status $HTTP_STATUS)."
+        else
+          echo "::error title=Deployment Failed::Dokploy Error. Status $HTTP_STATUS, Response: $RESPONSE_BODY"
+          exit 1 # Force GitHub Actions step failure
+        fi
