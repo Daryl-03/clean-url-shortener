@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "dev.richryl"
-version = "1.0.1"
+version = "1.0.2"
 
 allprojects {
     repositories { mavenCentral() }
