@@ -8,7 +8,7 @@ on:
     branches: [ "main", "develop" ]
 
 jobs:
-  build:
+  test-build:
 
     runs-on: ubuntu-latest
     permissions:
@@ -31,7 +31,7 @@ jobs:
       run: ./gradlew clean test :bootstrap-spring:bootJar
 
   dependency-submission:
-    needs: build
+    needs: test-build
 
     runs-on: ubuntu-latest
     permissions:
@@ -51,7 +51,7 @@ jobs:
       uses: gradle/actions/dependency-submission@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
   release:
-    needs: [build, dependency-submission]
+    needs: [test-build, dependency-submission]
     
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     
