@@ -92,6 +92,9 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
 
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
     - name: Trigger Dokploy Deployment
       uses: benbristow/dokploy-deploy-action@0.0.1
       with: 
