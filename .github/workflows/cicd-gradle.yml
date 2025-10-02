@@ -92,16 +92,10 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
 
-    - name: Trigger Dokploy Deployment
-      run: |
-        curl -X 'POST' \
-        '${{ secrets.DOKPLOY_URL }}/api/trpc/application.deploy' \
-        -H 'accept: application/json' \
-        -H 'x-api-key: ${{ secrets.DOKPLOY_AUTH_TOKEN }}' \
-        -H 'Content-Type: application/json' \
-        -d '{
-            "json":{
-                "applicationId": "${{ secrets.DOKPLOY_APPLICATION_ID }}"
-            }
-        }'
+    - name: Deploy to Dokploy
+      uses: ahmedabdou14/dokploy-deploy-gha@v1.1.0
+      with:
+        dokploy_url: ${{ secrets.DOKPLOY_URL }}
+        auth_token: ${{ secrets.DOKPLOY_API_KEY }}
+        application_id: ${{ secrets.DOKPLOY_APPLICATION_ID }}
 
