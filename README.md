@@ -1,6 +1,6 @@
 # 🔗 Clean URL Shortener
 
-A **URL shortener service** built with **Java 21, Spring Boot, and Clean Architecture (Uncle Bob)**.  
+A **URL shortener service** built with **Java 21, Spring Boot, TDD and Clean Architecture (Uncle Bob)**.  
 The project demonstrates modular boundaries (Domain, Application, Adapters, Frameworks) with Gradle multi-module setup.
 
 ---
