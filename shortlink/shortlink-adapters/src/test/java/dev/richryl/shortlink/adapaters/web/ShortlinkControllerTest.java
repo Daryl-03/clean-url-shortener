@@ -44,7 +44,6 @@ public class ShortlinkControllerTest {
     @Test
     public void whenPostRequestToCreateShortlink_thenReturnsCreatedShortlink() throws Exception {
         String originalUrl = "https://example.com/some/long/path";
-        String shortCode = "abc123";
 
         String requestBody = String.format("""
                 {

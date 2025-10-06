@@ -9,7 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Profile("prod")
 public class ProdCorsConfiguration implements WebMvcConfigurer {
 
-    private String allowedOrigins = System.getenv("CORS_ALLOWED_ORIGINS");
+    private final String allowedOrigins = System.getenv("CORS_ALLOWED_ORIGINS");
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {

@@ -3,8 +3,6 @@ package dev.richryl.shortlink.application.ports.in;
 import dev.richryl.shortlink.Shortlink;
 import dev.richryl.shortlink.application.ports.out.SlugGenerator;
 
-import java.util.regex.Pattern;
-
 public class CreateShortlinkInteractor implements CreateShortlinkUseCase{
     private final SlugGenerator slugGenerator;
 
