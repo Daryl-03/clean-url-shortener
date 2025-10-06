@@ -9,10 +9,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Profile("prod")
 public class ProdCorsConfiguration implements WebMvcConfigurer {
 
+    private String allowedOrigins = System.getenv("CORS_ALLOWED_ORIGINS");
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
-                .allowedOrigins("https://hopper.rylverse.dev")
+                .allowedOrigins(allowedOrigins != null ? allowedOrigins.split(",") : new String[]{})
                 .allowedMethods("POST", "GET", "PUT", "DELETE")
                 .allowedHeaders("*")
                 .allowCredentials(true);
