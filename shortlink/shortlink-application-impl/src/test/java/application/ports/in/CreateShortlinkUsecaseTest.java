@@ -31,10 +31,4 @@ public class CreateShortlinkUsecaseTest {
         assert shortlink.getShortCode() != null && !shortlink.getShortCode().isEmpty();
     }
 
-    @Test
-    @DisplayName("Should throw exception when url is not valid")
-    void should_throw_exception_when_not_valid_url(){
-        assertThrows(IllegalArgumentException.class, ()-> computeShortlink("invalidONe"));
-    }
-
 }

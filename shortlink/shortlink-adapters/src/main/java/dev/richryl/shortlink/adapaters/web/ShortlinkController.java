@@ -3,6 +3,7 @@ package dev.richryl.shortlink.adapaters.web;
 import dev.richryl.shortlink.Shortlink;
 import dev.richryl.shortlink.adapaters.web.dto.CreateShortlinkRequest;
 import dev.richryl.shortlink.application.ports.in.CreateShortlinkUseCase;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +21,8 @@ public class ShortlinkController {
     }
 
     @PostMapping()
-    public ResponseEntity<Shortlink> createShortlink(@RequestBody CreateShortlinkRequest request) {
+    public ResponseEntity<Shortlink> createShortlink(@RequestBody @Valid CreateShortlinkRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(createShortlinkUseCase.handle(request.url()));
+        
     }
 }

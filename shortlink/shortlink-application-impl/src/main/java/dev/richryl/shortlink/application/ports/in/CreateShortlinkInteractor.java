@@ -13,11 +13,7 @@ public class CreateShortlinkInteractor implements CreateShortlinkUseCase{
     }
 
 
-    public Shortlink handle(String url) {
-        Pattern validUrl = Pattern.compile("^https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)$");
-        if (!validUrl.matcher(url).find()){
-            throw new IllegalArgumentException("The url is not valid.");
-        }
+    public Shortlink handle(String url){
         return new Shortlink(url, slugGenerator.generate(url));
     }
 
