@@ -1,4 +1,4 @@
-# Le chemin est relatif au script, donc on remonte d'un niveau pour trouver .env à la racine.
+# The path is relative to the script, so we go up one level to find .env at the root.
 $envFile = ".\.env"
 
 if (Test-Path $envFile) {
