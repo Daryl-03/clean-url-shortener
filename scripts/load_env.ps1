@@ -4,7 +4,7 @@ $envFile = ".\.env"
 if (Test-Path $envFile) {
     Write-Host "Loading environment variables from $envFile..."
 
-    # Lire le contenu du fichier
+    # Read the contents of the file
     foreach ($line in (Get-Content $envFile)) {
         # Ignorer les lignes vides et les commentaires
         if (-not [string]::IsNullOrWhiteSpace($line) -and -not $line.TrimStart().StartsWith("#")) {
