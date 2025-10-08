@@ -1,17 +1,12 @@
-# The path is relative to the script, so we go up one level to find .env at the root.
 $envFile = ".\.env"
 
 if (Test-Path $envFile) {
     Write-Host "Loading environment variables from $envFile..."
 
-    # Read the contents of the file
     foreach ($line in (Get-Content $envFile)) {
-        # Ignore empty lines and comments
+
         if (-not [string]::IsNullOrWhiteSpace($line) -and -not $line.TrimStart().StartsWith("#")) {
 
-            # Improved regex:
-            # - Keys with letters, numbers, underscores, dots, and dashes.
-            # - Handles values with or without single/double quotes.
             if ($line -match '^([\w.-]+)\s*=\s*(["'']?)(.*)\2$') {
                 $key = $Matches[1]
                 $value = $Matches[3]
