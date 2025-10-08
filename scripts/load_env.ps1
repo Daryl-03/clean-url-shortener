@@ -6,7 +6,7 @@ if (Test-Path $envFile) {
 
     # Read the contents of the file
     foreach ($line in (Get-Content $envFile)) {
-        # Ignorer les lignes vides et les commentaires
+        # Ignore empty lines and comments
         if (-not [string]::IsNullOrWhiteSpace($line) -and -not $line.TrimStart().StartsWith("#")) {
 
             # Regex améliorée :
