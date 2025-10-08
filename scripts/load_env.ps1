@@ -9,9 +9,9 @@ if (Test-Path $envFile) {
         # Ignore empty lines and comments
         if (-not [string]::IsNullOrWhiteSpace($line) -and -not $line.TrimStart().StartsWith("#")) {
 
-            # Regex améliorée :
-            # - Clés avec lettres, chiffres, underscores, points et tirets.
-            # - Gère les valeurs avec ou sans guillemets simples/doubles.
+            # Improved regex:
+            # - Keys with letters, numbers, underscores, dots, and dashes.
+            # - Handles values with or without single/double quotes.
             if ($line -match '^([\w.-]+)\s*=\s*(["'']?)(.*)\2$') {
                 $key = $Matches[1]
                 $value = $Matches[3]
