@@ -3,13 +3,13 @@
 ENV_FILE=".env"
 
 if [ -f "$ENV_FILE" ]; then
-    echo "Chargement des variables d'environnement depuis $ENV_FILE..."
+    echo "Loading environment variables from $ENV_FILE..."
     source "$ENV_FILE"
-    echo "Variables chargées."
+    echo "Variables loaded."
 else
     echo "File not found. Tests will proceed without the env"
 fi
 
-echo "Lancement des tests Gradle..."
+echo "Starting Gradle tests..."
 
 exit $?
