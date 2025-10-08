@@ -23,6 +23,5 @@ public class ShortlinkController {
     @PostMapping()
     public ResponseEntity<Shortlink> createShortlink(@RequestBody @Valid CreateShortlinkRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(createShortlinkUseCase.handle(request.url()));
-        
     }
 }
