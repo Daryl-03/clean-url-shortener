@@ -16,7 +16,7 @@ if (Test-Path $envFile) {
                 $key = $Matches[1]
                 $value = $Matches[3]
 
-                # Définir la variable d'environnement pour le processus PowerShell actuel
+                # Set the environment variable for the current PowerShell process
                 [System.Environment]::SetEnvironmentVariable($key, $value, "Process")
                 Write-Host "  -> Set $key"
             }
