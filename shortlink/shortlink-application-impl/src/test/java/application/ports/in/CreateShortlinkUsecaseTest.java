@@ -8,6 +8,9 @@ import dev.richryl.shortlink.application.ports.out.SlugGenerator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 public class CreateShortlinkUsecaseTest {
     private final SlugGenerator slugGenerator = new FakeSlugGenerator("fixedSlug");
     private final CreateShortlinkUseCase createShortlinkUseCase = new CreateShortlinkInteractor(
@@ -24,9 +27,10 @@ public class CreateShortlinkUsecaseTest {
         String validUrl = "https://example.com";
 
         Shortlink shortlink = computeShortlink(validUrl);
-        assert shortlink != null;
-        assert shortlink.getOriginalUrl().equals(validUrl);
-        assert shortlink.getShortCode() != null && !shortlink.getShortCode().isEmpty();
+        assertNotNull(shortlink);
+        assertEquals(validUrl, shortlink.getOriginalUrl());
+        assertNotNull(shortlink.getShortCode());
+        assertEquals("fixedSlug", shortlink.getShortCode());
     }
 
 }
