@@ -10,6 +10,5 @@ public record ValidationErrorResponse(
 )
 {
     public record ValidationField(String field, String message){
-
     }
 }
