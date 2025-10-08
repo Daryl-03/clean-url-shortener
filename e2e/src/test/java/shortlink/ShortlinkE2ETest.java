@@ -39,4 +39,25 @@ public class ShortlinkE2ETest {
 
     }
 
+    @Test
+    @DisplayName("When an invalid url is provided, return 400 Bad Request with adequate error code and message")
+    void returnBadRequestForInvalidUrl() {
+        String requestBody = """
+                {
+                    "url": "invalid-url"
+                }
+                """;
+
+        webTestClient.post()
+                .uri("/api/shortlinks")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(requestBody)
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody()
+                .jsonPath("$.error").exists()
+                .jsonPath("$.code").exists()
+                .jsonPath("$.status").exists();
+    }
+
 }

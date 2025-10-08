@@ -8,8 +8,6 @@ import dev.richryl.shortlink.application.ports.out.SlugGenerator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 public class CreateShortlinkUsecaseTest {
     private final SlugGenerator slugGenerator = new FakeSlugGenerator("fixedSlug");
     private final CreateShortlinkUseCase createShortlinkUseCase = new CreateShortlinkInteractor(
@@ -29,12 +27,6 @@ public class CreateShortlinkUsecaseTest {
         assert shortlink != null;
         assert shortlink.getOriginalUrl().equals(validUrl);
         assert shortlink.getShortCode() != null && !shortlink.getShortCode().isEmpty();
-    }
-
-    @Test
-    @DisplayName("Should throw exception when url is not valid")
-    void should_throw_exception_when_not_valid_url(){
-        assertThrows(IllegalArgumentException.class, ()-> computeShortlink("invalidONe"));
     }
 
 }
