@@ -60,4 +60,33 @@ public class ShortlinkE2ETest {
                 .jsonPath("$.status").exists();
     }
 
+   @Test
+   @DisplayName("Retrieve previously created shortlink")
+    void retrievePreviouslyCreatedShortlink() {
+         String requestBody = """
+                {
+                     "url": "https://example.com/some/long/path"
+                }
+                """;
+
+         // Create a shortlink first
+         String shortCode = webTestClient.post()
+                .uri("/api/shortlinks")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(requestBody)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody()
+                .jsonPath("$.shortCode").toString();
+
+         // Retrieve the created shortlink
+         webTestClient.get()
+                .uri("/api/shortlinks/{shortCode}", shortCode)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.originalUrl").isEqualTo("https://example.com/some/long/path")
+                .jsonPath("$.shortCode").isEqualTo(shortCode);
+    }
+
 }

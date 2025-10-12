@@ -3,6 +3,7 @@ package dev.richryl.shortlink.adapaters.web;
 import dev.richryl.bootstrap.ShortlinkApp;
 import dev.richryl.shortlink.Shortlink;
 import dev.richryl.shortlink.application.ports.in.CreateShortlinkUseCase;
+import dev.richryl.shortlink.application.ports.in.GetShortlinkUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -30,6 +32,8 @@ public class ShortlinkControllerTest {
 
     @MockitoBean
     private CreateShortlinkUseCase createShortlinkUseCase;
+    @MockitoBean
+    private GetShortlinkUseCase getShortlinkUseCase;
 
     @BeforeEach
     public void setUp() {
@@ -55,7 +59,8 @@ public class ShortlinkControllerTest {
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
                 .content(requestBody))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.originalUrl").value(originalUrl));
+                .andExpect(jsonPath("$.originalUrl").value(originalUrl))
+        .andExpect(jsonPath("$.shortCode").value("abc123"));
 
         verify(createShortlinkUseCase, times(1)).handle(anyString());
     }
@@ -91,4 +96,37 @@ public class ShortlinkControllerTest {
                 .andExpect(jsonPath("$.status").exists());
 
     }
+
+    @Test
+    @DisplayName("Retrieve previously created shortlink")
+    void retrievePreviouslyCreatedShortlink() throws Exception {
+        String originalUrl = "https://example.com/some/long/path";
+        String requestBody = String.format("""
+                {
+                    "url": "%s"
+                }
+                """, originalUrl);
+
+        when(getShortlinkUseCase.handle(anyString())
+        ).thenReturn(new Shortlink(originalUrl, "abc123"));
+
+        mockMvc.perform(post("/api/shortlinks")
+                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.shortCode").value("abc123"))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        mockMvc.perform(get("/api/shortlinks/{shortCode}", "abc123")
+                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.originalUrl").value(originalUrl))
+                .andExpect(jsonPath("$.shortCode").value("abc123"));
+
+        verify(getShortlinkUseCase, times(1)).handle("abc123");
+    }
+
+
 }

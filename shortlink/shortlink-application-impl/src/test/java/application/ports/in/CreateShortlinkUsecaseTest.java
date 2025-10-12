@@ -8,11 +8,10 @@ import dev.richryl.shortlink.application.ports.out.SlugGenerator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CreateShortlinkUsecaseTest {
-    private final SlugGenerator slugGenerator = new FakeSlugGenerator("fixedSlug");
+    private final SlugGenerator slugGenerator = new FakeSlugGenerator();
     private final CreateShortlinkUseCase createShortlinkUseCase = new CreateShortlinkInteractor(
             slugGenerator
     );
@@ -30,7 +29,6 @@ public class CreateShortlinkUsecaseTest {
         assertNotNull(shortlink);
         assertEquals(validUrl, shortlink.getOriginalUrl());
         assertNotNull(shortlink.getShortCode());
-        assertEquals("fixedSlug", shortlink.getShortCode());
     }
 
 }

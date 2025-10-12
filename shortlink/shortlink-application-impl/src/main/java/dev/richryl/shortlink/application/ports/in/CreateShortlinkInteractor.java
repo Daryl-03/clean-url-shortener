@@ -14,7 +14,4 @@ public class CreateShortlinkInteractor implements CreateShortlinkUseCase{
     public Shortlink handle(String url){
         return new Shortlink(url, slugGenerator.generate(url));
     }
-
-
-
 }
