@@ -73,5 +73,6 @@ class CorsIntegrationTest {
                             .header("Access-Control-Request-Method", "POST"))
                     .andExpect(status().isForbidden());
         }
+
     }
 }

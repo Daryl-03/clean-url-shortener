@@ -1,4 +1,4 @@
-package dev.richryl.shortlink.adapaters.services;
+package dev.richryl.shortlink.adapters.services;
 
 import dev.richryl.shortlink.application.exceptions.SlugGenerationException;
 import dev.richryl.shortlink.application.ports.out.SlugGenerator;
