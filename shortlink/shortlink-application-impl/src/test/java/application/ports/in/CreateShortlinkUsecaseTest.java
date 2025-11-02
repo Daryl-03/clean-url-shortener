@@ -1,23 +1,19 @@
 package application.ports.in;
 
-import application.mocks.FakeShortlinkRepository;
 import application.mocks.FakeSlugGenerator;
 import dev.richryl.shortlink.Shortlink;
 import dev.richryl.shortlink.application.ports.in.CreateShortlinkInteractor;
 import dev.richryl.shortlink.application.ports.in.CreateShortlinkUseCase;
-import dev.richryl.shortlink.application.ports.out.ShortlinkRepository;
 import dev.richryl.shortlink.application.ports.out.SlugGenerator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class CreateShortlinkUsecaseTest {
-    private final SlugGenerator slugGenerator = new FakeSlugGenerator();
-    private final ShortlinkRepository shortlinkRepository = new FakeShortlinkRepository();
+    private final SlugGenerator slugGenerator = new FakeSlugGenerator("fixedSlug");
     private final CreateShortlinkUseCase createShortlinkUseCase = new CreateShortlinkInteractor(
-            slugGenerator,
-            shortlinkRepository
+            slugGenerator
     );
 
     private Shortlink computeShortlink(String url) {
@@ -30,22 +26,15 @@ public class CreateShortlinkUsecaseTest {
         String validUrl = "https://example.com";
 
         Shortlink shortlink = computeShortlink(validUrl);
-        assertNotNull(shortlink);
-        assertEquals(validUrl, shortlink.getOriginalUrl());
-        assertNotNull(shortlink.getShortCode());
+        assert shortlink != null;
+        assert shortlink.getOriginalUrl().equals(validUrl);
+        assert shortlink.getShortCode() != null && !shortlink.getShortCode().isEmpty();
     }
 
     @Test
-    @DisplayName("Should persist shortlink for later retrieval")
-    void should_persist_shortlink_for_later_retrieval() {
-        String validUrl = "https://example.com";
-        Shortlink shortlink1 = computeShortlink(validUrl);
-
-        Shortlink retrievedShortlink = shortlinkRepository.findByShortCode(shortlink1.getShortCode()).orElse(null);
-        assertNotNull(retrievedShortlink);
-        assertEquals(shortlink1.getOriginalUrl(), retrievedShortlink.getOriginalUrl());
-        assertEquals(shortlink1.getShortCode(), retrievedShortlink.getShortCode());
+    @DisplayName("Should throw exception when url is not valid")
+    void should_throw_exception_when_not_valid_url(){
+        assertThrows(IllegalArgumentException.class, ()-> computeShortlink("invalidONe"));
     }
-
 
 }
