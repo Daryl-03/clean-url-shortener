@@ -1,7 +1,8 @@
-package dev.richryl.shortlink.adapaters.web;
+package dev.richryl.shortlink.adapters.web;
 
-import dev.richryl.shortlink.adapaters.web.dto.ErrorResponse;
-import dev.richryl.shortlink.adapaters.web.dto.ValidationErrorResponse;
+import dev.richryl.shortlink.adapters.web.dto.ErrorResponse;
+import dev.richryl.shortlink.adapters.web.dto.ValidationErrorResponse;
+import dev.richryl.shortlink.application.exceptions.ShortlinkNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -32,5 +33,15 @@ public class GlobalShortlinkExceptionHandler {
                 "The request body is malformed or unreadable"
         );
         return ResponseEntity.badRequest().body(errorResponse);
+    }
+
+    @ExceptionHandler(ShortlinkNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleShortlinkNotFoundException(ShortlinkNotFoundException e) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                404,
+                "SHORTLINK_NOT_FOUND",
+                e.getMessage()
+        );
+        return ResponseEntity.status(404).body(errorResponse);
     }
 }

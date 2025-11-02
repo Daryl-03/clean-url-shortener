@@ -1,4 +1,4 @@
-package dev.richryl.shortlink.adapaters.web.dto;
+package dev.richryl.shortlink.adapters.web.dto;
 
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.URL;
