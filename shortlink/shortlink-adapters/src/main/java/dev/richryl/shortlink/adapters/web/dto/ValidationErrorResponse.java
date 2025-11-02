@@ -1,4 +1,4 @@
-package dev.richryl.shortlink.adapaters.web.dto;
+package dev.richryl.shortlink.adapters.web.dto;
 
 import java.util.List;
 

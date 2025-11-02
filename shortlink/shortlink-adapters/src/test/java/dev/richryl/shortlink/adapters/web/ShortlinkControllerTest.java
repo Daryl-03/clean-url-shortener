@@ -1,4 +1,4 @@
-package dev.richryl.shortlink.adapaters.web;
+package dev.richryl.shortlink.adapters.web;
 
 import dev.richryl.bootstrap.ShortlinkApp;
 import dev.richryl.shortlink.Shortlink;
@@ -98,35 +98,20 @@ public class ShortlinkControllerTest {
     }
 
     @Test
-    @DisplayName("Retrieve previously created shortlink")
-    void retrievePreviouslyCreatedShortlink() throws Exception {
+    @DisplayName("Retrieve shortlink when it exists")
+    void returnShortlinkWhenExists() throws Exception {
         String originalUrl = "https://example.com/some/long/path";
-        String requestBody = String.format("""
-                {
-                    "url": "%s"
-                }
-                """, originalUrl);
+        String shortcode = "abc123";
 
         when(getShortlinkUseCase.handle(anyString())
-        ).thenReturn(new Shortlink(originalUrl, "abc123"));
+        ).thenReturn(new Shortlink(originalUrl, shortcode));
 
-        mockMvc.perform(post("/api/shortlinks")
-                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
-                        .content(requestBody))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.shortCode").value("abc123"))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        mockMvc.perform(get("/api/shortlinks/{shortCode}", "abc123")
+        mockMvc.perform(get("/api/shortlinks/{shortCode}", shortcode)
                         .contentType(org.springframework.http.MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.originalUrl").value(originalUrl))
-                .andExpect(jsonPath("$.shortCode").value("abc123"));
+                .andExpect(jsonPath("$.shortCode").value(shortcode));
 
-        verify(getShortlinkUseCase, times(1)).handle("abc123");
+        verify(getShortlinkUseCase, times(1)).handle(shortcode);
     }
-
-
 }
