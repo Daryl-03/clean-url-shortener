@@ -1,4 +1,4 @@
-package dev.richryl.shortlink.adapters.services;
+package dev.richryl.shortlink.adapaters.services;
 
 public class Base62 {
     private static final String BASE62_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
