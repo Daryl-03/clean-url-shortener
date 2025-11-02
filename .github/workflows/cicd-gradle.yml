@@ -28,8 +28,6 @@ jobs:
       uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
     - name: Build with Gradle Wrapper
-      env:
-        CORS_ALLOWED_ORIGINS: ${{ secrets.CORS_ALLOWED_ORIGINS }}
       run: ./gradlew clean test :bootstrap-spring:bootJar
     
     - name: Generate and submit dependency graph
