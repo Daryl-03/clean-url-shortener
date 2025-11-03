@@ -1,26 +1,22 @@
 package dev.richryl.shortlink.application.ports.in;
 
 import dev.richryl.shortlink.Shortlink;
+import dev.richryl.shortlink.application.ports.out.ShortlinkRepository;
 import dev.richryl.shortlink.application.ports.out.SlugGenerator;
 
-import java.util.regex.Pattern;
-
-public class CreateShortlinkInteractor implements CreateShortlinkUseCase{
+public class CreateShortlinkInteractor implements CreateShortlinkUseCase {
     private final SlugGenerator slugGenerator;
+        private final ShortlinkRepository shortlinkRepository;
 
-    public CreateShortlinkInteractor(SlugGenerator slugGenerator) {
+    public CreateShortlinkInteractor(SlugGenerator slugGenerator, ShortlinkRepository shortlinkRepository) {
         this.slugGenerator = slugGenerator;
+        this.shortlinkRepository = shortlinkRepository;
+
     }
 
-
-    public Shortlink handle(String url) {
-        Pattern validUrl = Pattern.compile("^https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)$");
-        if (!validUrl.matcher(url).find()){
-            throw new IllegalArgumentException("The url is not valid.");
-        }
-        return new Shortlink(url, slugGenerator.generate(url));
+    public Shortlink handle(String url){
+        Shortlink shortlink = new Shortlink(url, slugGenerator.generate(url));
+        shortlinkRepository.save(shortlink);
+        return shortlink;
     }
-
-
-
 }
