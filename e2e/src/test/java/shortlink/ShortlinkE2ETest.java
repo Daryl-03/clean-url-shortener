@@ -65,34 +65,32 @@ public class ShortlinkE2ETest {
                 .jsonPath("$.status").exists();
     }
 
-   @Test
-   @DisplayName("Retrieve previously created shortlink")
+    @Test
+    @DisplayName("Retrieve previously created shortlink")
     void retrievePreviouslyCreatedShortlink() {
-         String requestBody = """
+        String requestBody = """
                 {
                      "url": "https://example.com/some/long/path"
                 }
                 """;
 
-         // Create a shortlink first
-       EntityExchangeResult<Map> result = webTestClient.post()
-               .uri("/api/shortlinks")
-               .contentType(MediaType.APPLICATION_JSON)
-               .bodyValue(requestBody)
-               .exchange()
-               .expectStatus().isCreated()
-                              .expectBody(Map.class) // Deserialize the JSON into a Map
-               .returnResult();
+        // Create a shortlink first
+        EntityExchangeResult<Map> result = webTestClient.post()
+                .uri("/api/shortlinks")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(requestBody)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody(Map.class) // Deserialize the JSON into a Map
+                .returnResult();
 
-       assertNotNull(result.getResponseBody());
+        assertNotNull(result.getResponseBody());
 
-       String shortCode = (String) result.getResponseBody().get("shortCode");
+        String shortCode = (String) result.getResponseBody().get("shortCode");
 
-       assertNotNull(shortCode);
+        assertNotNull(shortCode);
 
-
-         // Retrieve the created shortlink
-         webTestClient.get()
+        webTestClient.get()
                 .uri("/api/shortlinks/{shortCode}", shortCode)
                 .exchange()
                 .expectStatus().isOk()
