@@ -3,7 +3,8 @@ package dev.richryl.shortlink.adapters.web;
 import dev.richryl.bootstrap.ShortlinkApp;
 import dev.richryl.shortlink.Shortlink;
 import dev.richryl.shortlink.application.ports.in.CreateShortlinkUseCase;
-import dev.richryl.shortlink.application.ports.in.GetShortlinkUseCase;
+import dev.richryl.shortlink.application.ports.in.DeleteShortlinkByShortcodeUseCase;
+import dev.richryl.shortlink.application.ports.in.GetShortlinkByShortcodeUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,8 +16,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -33,7 +34,9 @@ public class ShortlinkControllerTest {
     @MockitoBean
     private CreateShortlinkUseCase createShortlinkUseCase;
     @MockitoBean
-    private GetShortlinkUseCase getShortlinkUseCase;
+    private GetShortlinkByShortcodeUseCase getShortlinkByShortcodeUseCase;
+    @MockitoBean
+    private DeleteShortlinkByShortcodeUseCase deleteShortlinkByShortcodeUseCase;
 
     @BeforeEach
     public void setUp() {
@@ -56,7 +59,7 @@ public class ShortlinkControllerTest {
                 """, originalUrl);
 
         mockMvc.perform(post("/api/shortlinks")
-                .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                .contentType(APPLICATION_JSON)
                 .content(requestBody))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.originalUrl").value(originalUrl))
@@ -74,7 +77,7 @@ public class ShortlinkControllerTest {
                 }
                 """;
         mockMvc.perform(post("/api/shortlinks")
-                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").exists())
@@ -88,7 +91,7 @@ public class ShortlinkControllerTest {
     void returnBadRequestForMissingUrl() throws Exception {
 
         mockMvc.perform(post("/api/shortlinks")
-                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
                         )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").exists())
@@ -103,15 +106,28 @@ public class ShortlinkControllerTest {
         String originalUrl = "https://example.com/some/long/path";
         String shortcode = "abc123";
 
-        when(getShortlinkUseCase.handle(anyString())
+        when(getShortlinkByShortcodeUseCase.handle(anyString())
         ).thenReturn(new Shortlink(originalUrl, shortcode));
 
         mockMvc.perform(get("/api/shortlinks/{shortCode}", shortcode)
-                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON))
+                        .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.originalUrl").value(originalUrl))
                 .andExpect(jsonPath("$.shortCode").value(shortcode));
 
-        verify(getShortlinkUseCase, times(1)).handle(shortcode);
+        verify(getShortlinkByShortcodeUseCase, times(1)).handle(shortcode);
     }
+
+    @Test
+    @DisplayName("Delete shortlink when it exists")
+    void deleteShortlinkWhenExists() throws Exception {
+        String shortcode = "abc123";
+
+        mockMvc.perform(delete("/api/shortlinks/{shortCode}", shortcode)
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        verify(deleteShortlinkByShortcodeUseCase, times(1)).handle(shortcode);
+    }
+
 }

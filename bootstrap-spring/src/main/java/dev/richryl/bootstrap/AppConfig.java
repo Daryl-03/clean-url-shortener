@@ -2,10 +2,7 @@ package dev.richryl.bootstrap;
 
 import dev.richryl.shortlink.adapters.persistence.InMemoryShortlinkRepository;
 import dev.richryl.shortlink.adapters.services.Base62SlugGenerator;
-import dev.richryl.shortlink.application.ports.in.CreateShortlinkInteractor;
-import dev.richryl.shortlink.application.ports.in.CreateShortlinkUseCase;
-import dev.richryl.shortlink.application.ports.in.GetShortlinkInteractor;
-import dev.richryl.shortlink.application.ports.in.GetShortlinkUseCase;
+import dev.richryl.shortlink.application.ports.in.*;
 import dev.richryl.shortlink.application.ports.out.ShortlinkRepository;
 import dev.richryl.shortlink.application.ports.out.SlugGenerator;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +27,12 @@ public class AppConfig {
     }
 
     @Bean
-    public GetShortlinkUseCase getShortlinkUseCase(ShortlinkRepository shortlinkRepository) {
-        return new GetShortlinkInteractor(shortlinkRepository);
+    public GetShortlinkByShortcodeUseCase getShortlinkByShortcodeUseCase(ShortlinkRepository shortlinkRepository) {
+        return new GetShortlinkByShortcodeInteractor(shortlinkRepository);
+    }
+
+    @Bean
+    public DeleteShortlinkByShortcodeUseCase deleteShortlinkByShortcodeUseCase(ShortlinkRepository shortlinkRepository) {
+        return new DeleteShortlinkByShortcodeInteractor(shortlinkRepository);
     }
 }

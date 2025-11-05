@@ -4,10 +4,10 @@ import dev.richryl.shortlink.Shortlink;
 import dev.richryl.shortlink.application.exceptions.ShortlinkNotFoundException;
 import dev.richryl.shortlink.application.ports.out.ShortlinkRepository;
 
-public class GetShortlinkInteractor implements GetShortlinkUseCase {
+public class GetShortlinkByShortcodeInteractor implements GetShortlinkByShortcodeUseCase {
     private final ShortlinkRepository shortlinkRepository;
 
-    public GetShortlinkInteractor(ShortlinkRepository shortlinkRepository) {
+    public GetShortlinkByShortcodeInteractor(ShortlinkRepository shortlinkRepository) {
         this.shortlinkRepository = shortlinkRepository;
     }
 

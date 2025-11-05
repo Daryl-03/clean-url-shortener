@@ -3,7 +3,8 @@ package dev.richryl.shortlink.adapters.web;
 import dev.richryl.shortlink.Shortlink;
 import dev.richryl.shortlink.adapters.web.dto.CreateShortlinkRequest;
 import dev.richryl.shortlink.application.ports.in.CreateShortlinkUseCase;
-import dev.richryl.shortlink.application.ports.in.GetShortlinkUseCase;
+import dev.richryl.shortlink.application.ports.in.DeleteShortlinkByShortcodeUseCase;
+import dev.richryl.shortlink.application.ports.in.GetShortlinkByShortcodeUseCase;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,11 +14,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/shortlinks")
 public class ShortlinkController {
     private final CreateShortlinkUseCase createShortlinkUseCase;
-    private final GetShortlinkUseCase getShortlinkUseCase;
+    private final GetShortlinkByShortcodeUseCase getShortlinkByShortcodeUseCase;
+    private final DeleteShortlinkByShortcodeUseCase deleteShortlinkByShortcodeUseCase;
 
-    public ShortlinkController(CreateShortlinkUseCase createShortlinkUseCase, GetShortlinkUseCase getShortlinkUseCase) {
+    public ShortlinkController(CreateShortlinkUseCase createShortlinkUseCase, GetShortlinkByShortcodeUseCase getShortlinkByShortcodeUseCase, DeleteShortlinkByShortcodeUseCase deleteShortlinkByShortcodeUseCase) {
         this.createShortlinkUseCase = createShortlinkUseCase;
-        this.getShortlinkUseCase = getShortlinkUseCase;
+        this.getShortlinkByShortcodeUseCase = getShortlinkByShortcodeUseCase;
+        this.deleteShortlinkByShortcodeUseCase = deleteShortlinkByShortcodeUseCase;
     }
 
     @PostMapping()
@@ -27,6 +30,12 @@ public class ShortlinkController {
 
     @GetMapping("/{shortCode}")
     public ResponseEntity<Shortlink> getShortlink(@PathVariable("shortCode") String shortCode) {
-        return ResponseEntity.status(HttpStatus.OK).body(getShortlinkUseCase.handle(shortCode));
+        return ResponseEntity.status(HttpStatus.OK).body(getShortlinkByShortcodeUseCase.handle(shortCode));
+    }
+
+    @DeleteMapping("/{shortCode}")
+    public ResponseEntity<Void> deleteShortlink(@PathVariable("shortCode") String shortCode) {
+        deleteShortlinkByShortcodeUseCase.handle(shortCode);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

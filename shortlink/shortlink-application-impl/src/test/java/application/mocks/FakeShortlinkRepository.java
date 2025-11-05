@@ -31,4 +31,9 @@ public class FakeShortlinkRepository implements ShortlinkRepository {
                 .findFirst();
     }
 
+    @Override
+    public void deleteByShortCode(String shortCode) {
+        shortlinks.removeIf(shortlink -> shortlink.getShortCode().equals(shortCode));
+    }
+
 }

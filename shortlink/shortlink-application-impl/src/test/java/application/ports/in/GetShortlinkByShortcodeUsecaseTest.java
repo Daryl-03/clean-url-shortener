@@ -3,17 +3,17 @@ package application.ports.in;
 import application.mocks.FakeShortlinkRepository;
 import dev.richryl.shortlink.Shortlink;
 import dev.richryl.shortlink.application.exceptions.ShortlinkNotFoundException;
-import dev.richryl.shortlink.application.ports.in.GetShortlinkInteractor;
-import dev.richryl.shortlink.application.ports.in.GetShortlinkUseCase;
+import dev.richryl.shortlink.application.ports.in.GetShortlinkByShortcodeInteractor;
+import dev.richryl.shortlink.application.ports.in.GetShortlinkByShortcodeUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GetShortlinkUsecaseTest {
+public class GetShortlinkByShortcodeUsecaseTest {
 
-    private GetShortlinkUseCase getShortlinkUseCase;
+    private GetShortlinkByShortcodeUseCase getShortlinkByShortcodeUseCase;
 
     @BeforeEach
     void setup() {
@@ -24,7 +24,7 @@ public class GetShortlinkUsecaseTest {
                 )
         );
 
-        getShortlinkUseCase = new GetShortlinkInteractor(
+        getShortlinkByShortcodeUseCase = new GetShortlinkByShortcodeInteractor(
                 shortlinkRepository
         );
     }
@@ -34,7 +34,7 @@ public class GetShortlinkUsecaseTest {
     void should_return_shortlink_when_given_existing_short_code() {
         String existingShortCode = "abc123";
 
-        Shortlink shortlink = getShortlinkUseCase.handle(existingShortCode);
+        Shortlink shortlink = getShortlinkByShortcodeUseCase.handle(existingShortCode);
 
         assertNotNull(shortlink);
         assertEquals(existingShortCode, shortlink.getShortCode());
@@ -46,7 +46,7 @@ public class GetShortlinkUsecaseTest {
     void should_throw_exception_when_given_non_existing_short_code() {
         String nonExistingShortCode = "xyz789";
         assertThrows(ShortlinkNotFoundException.class, () ->
-            getShortlinkUseCase.handle(nonExistingShortCode)
+            getShortlinkByShortcodeUseCase.handle(nonExistingShortCode)
         );
     }
 
