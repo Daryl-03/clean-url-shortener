@@ -8,6 +8,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @ControllerAdvice
 public class GlobalShortlinkExceptionHandler {
@@ -43,5 +44,15 @@ public class GlobalShortlinkExceptionHandler {
                 e.getMessage()
         );
         return ResponseEntity.status(404).body(errorResponse);
+    }
+    
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                400,
+                "INVALID_PATH_VARIABLE",
+                                "The path variable '" + e.getName() + "' has an invalid value: " + e.getValue() + ". Expected type: " + (e.getRequiredType() != null ? e.getRequiredType().getSimpleName() : null)
+        );
+        return ResponseEntity.badRequest().body(errorResponse);
     }
 }

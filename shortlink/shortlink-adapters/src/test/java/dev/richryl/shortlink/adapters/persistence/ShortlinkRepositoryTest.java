@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -23,13 +25,30 @@ public abstract class ShortlinkRepositoryTest {
     @Test
     @DisplayName("Should save and find shortlink by short code")
     void testSaveAndFindByShortCode() {
+        UUID id = UUID.randomUUID();
         Shortlink shortlink = new Shortlink(
+                id,
                 "https://example.com",
                 "exmpl"
         );
         shortlinkRepository.save(shortlink);
         Shortlink retrievedShortlink = shortlinkRepository.findByShortCode("exmpl").orElse(null);
 
+        assertNotNull(retrievedShortlink);
+        assertEquals(retrievedShortlink, shortlink);
+    }
+
+    @Test
+    @DisplayName("Should save and find shortlink by id")
+    void testSaveAndFindById() {
+        UUID id = UUID.randomUUID();
+        Shortlink shortlink = new Shortlink(
+                id,
+                "https://example.com",
+                "exmpl"
+        );
+        shortlinkRepository.save(shortlink);
+        Shortlink retrievedShortlink = shortlinkRepository.findById(id).orElse(null);
         assertNotNull(retrievedShortlink);
         assertEquals(retrievedShortlink, shortlink);
     }

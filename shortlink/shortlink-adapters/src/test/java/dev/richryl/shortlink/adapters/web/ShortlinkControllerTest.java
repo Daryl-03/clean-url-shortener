@@ -3,8 +3,8 @@ package dev.richryl.shortlink.adapters.web;
 import dev.richryl.bootstrap.ShortlinkApp;
 import dev.richryl.shortlink.Shortlink;
 import dev.richryl.shortlink.application.ports.in.CreateShortlinkUseCase;
-import dev.richryl.shortlink.application.ports.in.DeleteShortlinkByShortcodeUseCase;
-import dev.richryl.shortlink.application.ports.in.GetShortlinkByShortcodeUseCase;
+import dev.richryl.shortlink.application.ports.in.DeleteShortlinkByIdUseCase;
+import dev.richryl.shortlink.application.ports.in.GetShortlinkByIdUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,6 +14,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.UUID;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -34,9 +36,9 @@ public class ShortlinkControllerTest {
     @MockitoBean
     private CreateShortlinkUseCase createShortlinkUseCase;
     @MockitoBean
-    private GetShortlinkByShortcodeUseCase getShortlinkByShortcodeUseCase;
+    private GetShortlinkByIdUseCase getShortlinkByIdUseCase;
     @MockitoBean
-    private DeleteShortlinkByShortcodeUseCase deleteShortlinkByShortcodeUseCase;
+    private DeleteShortlinkByIdUseCase deleteShortlinkByIdUseCase;
 
     @BeforeEach
     public void setUp() {
@@ -44,7 +46,7 @@ public class ShortlinkControllerTest {
         when(createShortlinkUseCase.handle(anyString()))
                 .thenAnswer(invocation -> {
                     String url = invocation.getArgument(0);
-                    return new Shortlink(url, "abc123");
+                    return new Shortlink(UUID.randomUUID() ,url, "abc123");
                 });
     }
 
@@ -105,29 +107,31 @@ public class ShortlinkControllerTest {
     void returnShortlinkWhenExists() throws Exception {
         String originalUrl = "https://example.com/some/long/path";
         String shortcode = "abc123";
+        UUID id = UUID.randomUUID();
 
-        when(getShortlinkByShortcodeUseCase.handle(anyString())
-        ).thenReturn(new Shortlink(originalUrl, shortcode));
+        when(getShortlinkByIdUseCase.handle(any(UUID.class))
+        ).thenReturn(new Shortlink(id , originalUrl, shortcode));
 
-        mockMvc.perform(get("/api/shortlinks/{shortCode}", shortcode)
+        mockMvc.perform(get("/api/shortlinks/{id}", id)
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.originalUrl").value(originalUrl))
-                .andExpect(jsonPath("$.shortCode").value(shortcode));
+                .andExpect(jsonPath("$.shortCode").value(shortcode))
+                .andExpect(jsonPath("$.id").value(id.toString()));
 
-        verify(getShortlinkByShortcodeUseCase, times(1)).handle(shortcode);
+        verify(getShortlinkByIdUseCase, times(1)).handle(id);
     }
 
     @Test
     @DisplayName("Delete shortlink when it exists")
     void deleteShortlinkWhenExists() throws Exception {
-        String shortcode = "abc123";
+        UUID id = UUID.randomUUID();
 
-        mockMvc.perform(delete("/api/shortlinks/{shortCode}", shortcode)
+        mockMvc.perform(delete("/api/shortlinks/{id}", id)
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
-        verify(deleteShortlinkByShortcodeUseCase, times(1)).handle(shortcode);
+        verify(deleteShortlinkByIdUseCase, times(1)).handle(id);
     }
 
 }
