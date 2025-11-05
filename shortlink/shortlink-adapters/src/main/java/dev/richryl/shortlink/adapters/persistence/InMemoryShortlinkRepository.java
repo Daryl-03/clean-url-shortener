@@ -22,4 +22,9 @@ public class InMemoryShortlinkRepository implements ShortlinkRepository {
                 .filter(shortlink -> shortlink.getShortCode().equals(shortCode))
                 .findFirst();
     }
+
+    @Override
+    public void deleteByShortCode(String shortCode) {
+        shortlinks.removeIf(shortlink -> shortlink.getShortCode().equals(shortCode));
+    }
 }

@@ -116,4 +116,39 @@ public class ShortlinkE2ETest {
                 .jsonPath("$.status").exists();
     }
 
+    @Test
+    @DisplayName("Delete previously created shortlink")
+    void  deletePreviouslyCreatedShortlink() {
+        String requestBody = """
+                {
+                    "url": "https://example.com/some/long/path"
+                }
+                """;
+
+        EntityExchangeResult<Map> result = webTestClient.post()
+                .uri("/api/shortlinks")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(requestBody)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody(Map.class)
+                .returnResult();
+
+        assertNotNull(result.getResponseBody());
+
+        String shortCode = (String) result.getResponseBody().get("shortCode");
+
+        assertNotNull(shortCode);
+
+        webTestClient.delete()
+                .uri("/api/shortlinks/{shortCode}", shortCode)
+                .exchange()
+                .expectStatus().isNoContent();
+
+        webTestClient.get()
+                .uri("/api/shortlinks/{shortCode}", shortCode)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
 }

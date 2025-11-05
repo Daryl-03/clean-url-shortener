@@ -8,4 +8,5 @@ public interface ShortlinkRepository {
 
     void save(Shortlink shortlink);
     Optional<Shortlink> findByShortCode(String shortCode);
+    void deleteByShortCode(String shortCode);
 }
