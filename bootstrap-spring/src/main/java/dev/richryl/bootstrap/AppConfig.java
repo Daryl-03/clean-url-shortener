@@ -2,7 +2,9 @@ package dev.richryl.bootstrap;
 
 import dev.richryl.shortlink.adapters.persistence.InMemoryShortlinkRepository;
 import dev.richryl.shortlink.adapters.services.Base62SlugGenerator;
+import dev.richryl.shortlink.adapters.services.UuidIdGenerator;
 import dev.richryl.shortlink.application.ports.in.*;
+import dev.richryl.shortlink.application.ports.out.ShortlinkIdGenerator;
 import dev.richryl.shortlink.application.ports.out.ShortlinkRepository;
 import dev.richryl.shortlink.application.ports.out.SlugGenerator;
 import org.springframework.context.annotation.Bean;
@@ -17,8 +19,13 @@ public class AppConfig {
     }
 
     @Bean
-    public CreateShortlinkUseCase createShortlinkUseCase(SlugGenerator slugGenerator, ShortlinkRepository shortlinkRepository) {
-        return new CreateShortlinkInteractor(slugGenerator, shortlinkRepository);
+    public ShortlinkIdGenerator shortlinkIdGenerator() {
+        return new UuidIdGenerator();
+    }
+
+    @Bean
+    public CreateShortlinkUseCase createShortlinkUseCase(SlugGenerator slugGenerator, ShortlinkRepository shortlinkRepository, ShortlinkIdGenerator shortlinkIdGenerator) {
+        return new CreateShortlinkInteractor(slugGenerator, shortlinkRepository, shortlinkIdGenerator);
     }
 
     @Bean
@@ -27,12 +34,12 @@ public class AppConfig {
     }
 
     @Bean
-    public GetShortlinkByShortcodeUseCase getShortlinkByShortcodeUseCase(ShortlinkRepository shortlinkRepository) {
-        return new GetShortlinkByShortcodeInteractor(shortlinkRepository);
+    public GetShortlinkByIdUseCase getShortlinkByIdUseCase(ShortlinkRepository shortlinkRepository) {
+        return new GetShortlinkByIdInteractor(shortlinkRepository);
     }
 
     @Bean
-    public DeleteShortlinkByShortcodeUseCase deleteShortlinkByShortcodeUseCase(ShortlinkRepository shortlinkRepository) {
-        return new DeleteShortlinkByShortcodeInteractor(shortlinkRepository);
+    public DeleteShortlinkByIdUseCase deleteShortlinkByIdUseCase(ShortlinkRepository shortlinkRepository) {
+        return new DeleteShortlinkByIdInteractor(shortlinkRepository);
     }
 }

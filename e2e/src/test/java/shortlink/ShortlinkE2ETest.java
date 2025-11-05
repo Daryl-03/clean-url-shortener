@@ -10,6 +10,7 @@ import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -87,13 +88,14 @@ public class ShortlinkE2ETest {
        assertNotNull(result.getResponseBody());
 
        String shortCode = (String) result.getResponseBody().get("shortCode");
+       String id = (String) result.getResponseBody().get("id");
 
        assertNotNull(shortCode);
 
 
          // Retrieve the created shortlink
          webTestClient.get()
-                .uri("/api/shortlinks/{shortCode}", shortCode)
+                .uri("/api/shortlinks/{id}", id)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
@@ -104,12 +106,26 @@ public class ShortlinkE2ETest {
     @Test
     @DisplayName("When retrieving a non-existing shortlink, return 404 Not Found")
     void returnNotFoundForNonExistingShortlink() {
-        String nonExistingShortCode = "nonexistent";
+        UUID nonExistingId = UUID.randomUUID();
 
         webTestClient.get()
-                .uri("/api/shortlinks/{shortCode}", nonExistingShortCode)
+                .uri("/api/shortlinks/{nonExistingId}", nonExistingId)
                 .exchange()
                 .expectStatus().isNotFound()
+                .expectBody()
+                .jsonPath("$.error").exists()
+                .jsonPath("$.code").exists()
+                .jsonPath("$.status").exists();
+    }
+
+    @Test
+    @DisplayName("When id is invalid format, return 400 Bad Request with adequate error message")
+    void returnBadRequestForInvalidIdFormat() {
+        String invalidId = "invalid-uuid-format";
+        webTestClient.get()
+                .uri("/api/shortlinks/{id}", invalidId)
+                .exchange()
+                .expectStatus().isBadRequest()
                 .expectBody()
                 .jsonPath("$.error").exists()
                 .jsonPath("$.code").exists()
@@ -136,17 +152,17 @@ public class ShortlinkE2ETest {
 
         assertNotNull(result.getResponseBody());
 
-        String shortCode = (String) result.getResponseBody().get("shortCode");
+        String id = (String) result.getResponseBody().get("id");
 
-        assertNotNull(shortCode);
+        assertNotNull(id);
 
         webTestClient.delete()
-                .uri("/api/shortlinks/{shortCode}", shortCode)
+                .uri("/api/shortlinks/{id}", id)
                 .exchange()
                 .expectStatus().isNoContent();
 
         webTestClient.get()
-                .uri("/api/shortlinks/{shortCode}", shortCode)
+                .uri("/api/shortlinks/{id}", id)
                 .exchange()
                 .expectStatus().isNotFound();
     }

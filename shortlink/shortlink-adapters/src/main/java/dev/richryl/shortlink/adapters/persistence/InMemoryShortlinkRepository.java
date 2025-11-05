@@ -6,6 +6,7 @@ import dev.richryl.shortlink.application.ports.out.ShortlinkRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class InMemoryShortlinkRepository implements ShortlinkRepository {
 
@@ -24,7 +25,14 @@ public class InMemoryShortlinkRepository implements ShortlinkRepository {
     }
 
     @Override
-    public void deleteByShortCode(String shortCode) {
-        shortlinks.removeIf(shortlink -> shortlink.getShortCode().equals(shortCode));
+    public Optional<Shortlink> findById(UUID id) {
+        return shortlinks.stream()
+                .filter(shortlink -> shortlink.getId().equals(id))
+                .findFirst();
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        shortlinks.removeIf(shortlink -> shortlink.getId().equals(id));
     }
 }
