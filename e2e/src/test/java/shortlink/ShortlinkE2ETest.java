@@ -5,13 +5,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.Map;
+import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(
         classes = ShortlinkApp.class,
@@ -22,6 +24,21 @@ public class ShortlinkE2ETest {
     @Autowired
     private WebTestClient webTestClient;
 
+    private record ResponseData(EntityExchangeResult<Map<String, Object>> data) {
+    }
+
+    private ResponseData createShortlinkRequest(String requestBody) {
+        EntityExchangeResult<Map<String, Object>> data = webTestClient.post()
+                .uri("/api/shortlinks")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(requestBody)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody(new ParameterizedTypeReference<Map<String, Object>>() {
+                }) // Deserialize the JSON into a Map
+                .returnResult();
+        return new ResponseData(data);
+    }
 
     @Test
     @DisplayName("E2E test for creating shortlink")
@@ -65,35 +82,25 @@ public class ShortlinkE2ETest {
                 .jsonPath("$.status").exists();
     }
 
-   @Test
-   @DisplayName("Retrieve previously created shortlink")
+    @Test
+    @DisplayName("Retrieve previously created shortlink by id")
     void retrievePreviouslyCreatedShortlink() {
-         String requestBody = """
+        String requestBody = """
                 {
                      "url": "https://example.com/some/long/path"
                 }
                 """;
+        ResponseData result = createShortlinkRequest(requestBody);
 
-         // Create a shortlink first
-       EntityExchangeResult<Map> result = webTestClient.post()
-               .uri("/api/shortlinks")
-               .contentType(MediaType.APPLICATION_JSON)
-               .bodyValue(requestBody)
-               .exchange()
-               .expectStatus().isCreated()
-                              .expectBody(Map.class) // Deserialize the JSON into a Map
-               .returnResult();
+        assertNotNull(result.data().getResponseBody());
 
-       assertNotNull(result.getResponseBody());
+        String shortCode = (String) result.data().getResponseBody().get("shortCode");
+        String id = (String) result.data().getResponseBody().get("id");
 
-       String shortCode = (String) result.getResponseBody().get("shortCode");
+        assertNotNull(shortCode);
 
-       assertNotNull(shortCode);
-
-
-         // Retrieve the created shortlink
-         webTestClient.get()
-                .uri("/api/shortlinks/{shortCode}", shortCode)
+        webTestClient.get()
+                .uri("/api/shortlinks/{id}", id)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
@@ -102,12 +109,58 @@ public class ShortlinkE2ETest {
     }
 
     @Test
-    @DisplayName("When retrieving a non-existing shortlink, return 404 Not Found")
-    void returnNotFoundForNonExistingShortlink() {
-        String nonExistingShortCode = "nonexistent";
+    @DisplayName("Update previously created shortlink by id")
+    void updatePreviouslyCreatedShortlinkById() {
+        String requestBody = """
+                {
+                    "url": "https://example.com/some/long/path"
+                }
+                """;
 
-        webTestClient.get()
-                .uri("/api/shortlinks/{shortCode}", nonExistingShortCode)
+        ResponseData result = createShortlinkRequest(requestBody);
+
+        assertNotNull(result.data().getResponseBody());
+
+        String id = (String) result.data().getResponseBody().get("id");
+
+        assertNotNull(id);
+
+        String updateRequestBody = """
+                {
+                    "id": "%s",
+                    "url": "https://example.com/updated/path"
+                }
+                """;
+        updateRequestBody = String.format(updateRequestBody, id);
+
+        webTestClient.put()
+                .uri("/api/shortlinks")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(updateRequestBody)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.originalUrl").isEqualTo("https://example.com/updated/path");
+
+    }
+
+    @Test
+    @DisplayName("When updating a non-existing shortlink, return 404 Not Found")
+    void returnNotFoundWhenUpdatingNonExistingShortlink() {
+        String nonExistingId = UUID.randomUUID().toString();
+
+        String updateRequestBody = """
+                {
+                    "id": "%s",
+                    "url": "https://example.com/updated/path"
+                }
+                """;
+        updateRequestBody = String.format(updateRequestBody, nonExistingId);
+
+        webTestClient.put()
+                .uri("/api/shortlinks")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(updateRequestBody)
                 .exchange()
                 .expectStatus().isNotFound()
                 .expectBody()
@@ -116,4 +169,84 @@ public class ShortlinkE2ETest {
                 .jsonPath("$.status").exists();
     }
 
+    @Test
+    @DisplayName("When retrieving a non-existing shortlink, return 404 Not Found")
+    void returnNotFoundForNonExistingShortlink() {
+        UUID nonExistingId = UUID.randomUUID();
+
+        webTestClient.get()
+                .uri("/api/shortlinks/{nonExistingId}", nonExistingId)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                .jsonPath("$.error").exists()
+                .jsonPath("$.code").exists()
+                .jsonPath("$.status").exists();
+    }
+
+    @Test
+    @DisplayName("When id is invalid format, return 400 Bad Request with adequate error message")
+    void returnBadRequestForInvalidIdFormat() {
+        String invalidId = "invalid-uuid-format";
+        webTestClient.get()
+                .uri("/api/shortlinks/{id}", invalidId)
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody()
+                .jsonPath("$.error").exists()
+                .jsonPath("$.code").exists()
+                .jsonPath("$.status").exists();
+    }
+
+    @Test
+    @DisplayName("Delete previously created shortlink")
+    void deletePreviouslyCreatedShortlink() {
+        String requestBody = """
+                {
+                    "url": "https://example.com/some/long/path"
+                }
+                """;
+
+        ResponseData result = createShortlinkRequest(requestBody);
+
+        assertNotNull(result.data().getResponseBody());
+
+        String id = (String) result.data().getResponseBody().get("id");
+
+        assertNotNull(id);
+
+        webTestClient.delete()
+                .uri("/api/shortlinks/{id}", id)
+                .exchange()
+                .expectStatus().isNoContent();
+
+        webTestClient.get()
+                .uri("/api/shortlinks/{id}", id)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    @DisplayName("Redirect to original URL when requesting with short code")
+    void redirectToOriginalUrlUsingShortCode() {
+        String requestBody = """
+                {
+                    "url": "https://example.com/some/long/path"
+                }
+                """;
+
+        ResponseData result = createShortlinkRequest(requestBody);
+
+        assertNotNull(result.data().getResponseBody());
+
+        String shortCode = (String) result.data().getResponseBody().get("shortCode");
+
+        assertNotNull(shortCode);
+
+        webTestClient.get()
+                .uri("/s/{shortCode}", shortCode) //
+                .exchange()
+                .expectStatus().is3xxRedirection()
+                .expectHeader().valueEquals("Location", "https://example.com/some/long/path");
+    }
 }

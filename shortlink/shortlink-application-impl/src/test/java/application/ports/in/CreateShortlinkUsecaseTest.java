@@ -1,10 +1,12 @@
 package application.ports.in;
 
+import application.mocks.FakeIdGenerator;
 import application.mocks.FakeShortlinkRepository;
 import application.mocks.FakeSlugGenerator;
 import dev.richryl.shortlink.Shortlink;
 import dev.richryl.shortlink.application.ports.in.CreateShortlinkInteractor;
 import dev.richryl.shortlink.application.ports.in.CreateShortlinkUseCase;
+import dev.richryl.shortlink.application.ports.out.ShortlinkIdGenerator;
 import dev.richryl.shortlink.application.ports.out.ShortlinkRepository;
 import dev.richryl.shortlink.application.ports.out.SlugGenerator;
 import org.junit.jupiter.api.DisplayName;
@@ -15,9 +17,11 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CreateShortlinkUsecaseTest {
     private final SlugGenerator slugGenerator = new FakeSlugGenerator();
     private final ShortlinkRepository shortlinkRepository = new FakeShortlinkRepository();
+    private final ShortlinkIdGenerator shortlinkIdGenerator = new FakeIdGenerator();
     private final CreateShortlinkUseCase createShortlinkUseCase = new CreateShortlinkInteractor(
             slugGenerator,
-            shortlinkRepository
+            shortlinkRepository,
+            shortlinkIdGenerator
     );
 
     private Shortlink computeShortlink(String url) {
