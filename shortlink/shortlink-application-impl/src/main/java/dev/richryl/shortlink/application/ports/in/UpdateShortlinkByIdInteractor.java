@@ -1,0 +1,27 @@
+package dev.richryl.shortlink.application.ports.in;
+
+import dev.richryl.shortlink.Shortlink;
+import dev.richryl.shortlink.application.exceptions.ShortlinkNotFoundException;
+import dev.richryl.shortlink.application.ports.dto.UpdateShortlinkCommand;
+import dev.richryl.shortlink.application.ports.out.ShortlinkRepository;
+
+public class UpdateShortlinkByIdInteractor implements UpdateShortlinkByIdUseCase {
+    private final ShortlinkRepository shortlinkRepository;
+
+
+    public UpdateShortlinkByIdInteractor(ShortlinkRepository shortlinkRepository) {
+        this.shortlinkRepository = shortlinkRepository;
+    }
+
+    @Override
+    public Shortlink handle(UpdateShortlinkCommand command) {
+        Shortlink shortlink = shortlinkRepository.findById(command.id())
+                .orElse(null);
+        if (shortlink == null) {
+            return null;
+        }
+        Shortlink updatedShortlink = new Shortlink(command.id(), command.url(), shortlink.getShortCode());
+        shortlinkRepository.update(updatedShortlink);
+        return updatedShortlink;
+    }
+}

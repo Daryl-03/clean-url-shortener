@@ -44,4 +44,17 @@ public class FakeShortlinkRepository implements ShortlinkRepository {
         shortlinks.removeIf(shortlink -> shortlink.getId().equals(id));
     }
 
+    @Override
+    public Shortlink update(Shortlink updatedShortlink) {
+        return shortlinks.stream()
+                .filter(shortlink -> shortlink.getId().equals(updatedShortlink.getId()))
+                .findFirst()
+                .map(existingShortlink -> {
+                    shortlinks.remove(existingShortlink);
+                    shortlinks.add(updatedShortlink);
+                    return updatedShortlink;
+                })
+                .orElse(null);
+    }
+
 }
