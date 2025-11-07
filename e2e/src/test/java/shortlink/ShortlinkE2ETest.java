@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -12,7 +13,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(
         classes = ShortlinkApp.class,
@@ -23,6 +24,21 @@ public class ShortlinkE2ETest {
     @Autowired
     private WebTestClient webTestClient;
 
+    private record ResponseData(EntityExchangeResult<Map<String, Object>> data) {
+    }
+
+    private ResponseData createShortlinkRequest(String requestBody) {
+        EntityExchangeResult<Map<String, Object>> data = webTestClient.post()
+                .uri("/api/shortlinks")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(requestBody)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody(new ParameterizedTypeReference<Map<String, Object>>() {
+                }) // Deserialize the JSON into a Map
+                .returnResult();
+        return new ResponseData(data);
+    }
 
     @Test
     @DisplayName("E2E test for creating shortlink")
@@ -66,35 +82,24 @@ public class ShortlinkE2ETest {
                 .jsonPath("$.status").exists();
     }
 
-   @Test
-   @DisplayName("Retrieve previously created shortlink")
+    @Test
+    @DisplayName("Retrieve previously created shortlink by id")
     void retrievePreviouslyCreatedShortlink() {
-         String requestBody = """
+        String requestBody = """
                 {
                      "url": "https://example.com/some/long/path"
                 }
                 """;
+        ResponseData result = createShortlinkRequest(requestBody);
 
-         // Create a shortlink first
-       EntityExchangeResult<Map> result = webTestClient.post()
-               .uri("/api/shortlinks")
-               .contentType(MediaType.APPLICATION_JSON)
-               .bodyValue(requestBody)
-               .exchange()
-               .expectStatus().isCreated()
-                              .expectBody(Map.class) // Deserialize the JSON into a Map
-               .returnResult();
+        assertNotNull(result.data().getResponseBody());
 
-       assertNotNull(result.getResponseBody());
+        String shortCode = (String) result.data().getResponseBody().get("shortCode");
+        String id = (String) result.data().getResponseBody().get("id");
 
-       String shortCode = (String) result.getResponseBody().get("shortCode");
-       String id = (String) result.getResponseBody().get("id");
+        assertNotNull(shortCode);
 
-       assertNotNull(shortCode);
-
-
-         // Retrieve the created shortlink
-         webTestClient.get()
+        webTestClient.get()
                 .uri("/api/shortlinks/{id}", id)
                 .exchange()
                 .expectStatus().isOk()
@@ -102,6 +107,8 @@ public class ShortlinkE2ETest {
                 .jsonPath("$.originalUrl").isEqualTo("https://example.com/some/long/path")
                 .jsonPath("$.shortCode").isEqualTo(shortCode);
     }
+
+
 
     @Test
     @DisplayName("When retrieving a non-existing shortlink, return 404 Not Found")
@@ -134,25 +141,18 @@ public class ShortlinkE2ETest {
 
     @Test
     @DisplayName("Delete previously created shortlink")
-    void  deletePreviouslyCreatedShortlink() {
+    void deletePreviouslyCreatedShortlink() {
         String requestBody = """
                 {
                     "url": "https://example.com/some/long/path"
                 }
                 """;
 
-        EntityExchangeResult<Map> result = webTestClient.post()
-                .uri("/api/shortlinks")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(requestBody)
-                .exchange()
-                .expectStatus().isCreated()
-                .expectBody(Map.class)
-                .returnResult();
+        ResponseData result = createShortlinkRequest(requestBody);
 
-        assertNotNull(result.getResponseBody());
+        assertNotNull(result.data().getResponseBody());
 
-        String id = (String) result.getResponseBody().get("id");
+        String id = (String) result.data().getResponseBody().get("id");
 
         assertNotNull(id);
 
