@@ -35,4 +35,16 @@ public class InMemoryShortlinkRepository implements ShortlinkRepository {
     public void deleteById(UUID id) {
         shortlinks.removeIf(shortlink -> shortlink.getId().equals(id));
     }
+
+    @Override
+    public Optional<Shortlink> update(Shortlink updatedShortlink) {
+        return shortlinks.stream()
+                .filter(shortlink -> shortlink.getId().equals(updatedShortlink.getId()))
+                .findFirst()
+                .map(existingShortlink -> {
+                    shortlinks.remove(existingShortlink);
+                    shortlinks.add(updatedShortlink);
+                    return updatedShortlink;
+                });
+    }
 }

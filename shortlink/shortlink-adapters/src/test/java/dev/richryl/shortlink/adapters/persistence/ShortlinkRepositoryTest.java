@@ -40,7 +40,7 @@ public abstract class ShortlinkRepositoryTest {
 
     @Test
     @DisplayName("Should save and find shortlink by id")
-    void testSaveAndFindById() {
+    void saveAndFindById() {
         UUID id = UUID.randomUUID();
         Shortlink shortlink = new Shortlink(
                 id,
@@ -51,6 +51,29 @@ public abstract class ShortlinkRepositoryTest {
         Shortlink retrievedShortlink = shortlinkRepository.findById(id).orElse(null);
         assertNotNull(retrievedShortlink);
         assertEquals(retrievedShortlink, shortlink);
+    }
+
+    @Test
+    @DisplayName("Should update a shortlink given its id")
+    void updateShortlink() {
+        UUID id = UUID.randomUUID();
+        Shortlink shortlink = new Shortlink(
+                id,
+                "https://example.com",
+                "exmpl"
+        );
+        shortlinkRepository.save(shortlink);
+
+        Shortlink updatedShortlink = new Shortlink(
+                id,
+                "https://updatedexample.com",
+                "exmpl"
+        );
+        Shortlink result = shortlinkRepository.update(updatedShortlink).orElse(null);
+
+        assertNotNull(result);
+        assertEquals("https://updatedexample.com", result.getOriginalUrl());
+        assertEquals("exmpl", result.getShortCode());
     }
 
 }

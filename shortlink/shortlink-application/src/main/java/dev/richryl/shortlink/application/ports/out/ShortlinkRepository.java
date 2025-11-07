@@ -12,5 +12,5 @@ public interface ShortlinkRepository {
     Optional<Shortlink> findById(UUID id);
     void deleteById(UUID id);
 
-    Shortlink update(Shortlink updatedShortlink);
+    Optional<Shortlink> update(Shortlink updatedShortlink);
 }
