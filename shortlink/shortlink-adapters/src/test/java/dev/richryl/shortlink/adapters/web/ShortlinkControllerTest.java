@@ -2,7 +2,6 @@ package dev.richryl.shortlink.adapters.web;
 
 import dev.richryl.bootstrap.ShortlinkApp;
 import dev.richryl.shortlink.Shortlink;
-import dev.richryl.shortlink.adapters.web.dto.UpdateShortlinkRequest;
 import dev.richryl.shortlink.application.ports.dto.UpdateShortlinkCommand;
 import dev.richryl.shortlink.application.ports.in.CreateShortlinkUseCase;
 import dev.richryl.shortlink.application.ports.in.DeleteShortlinkByIdUseCase;
@@ -151,7 +150,7 @@ public class ShortlinkControllerTest {
                     "id": "%s",
                     "url": "%s"
                 }
-                """, id.toString(), originalUrl);
+                """, id, originalUrl);
         Shortlink object = new Shortlink(id, originalUrl, shortcode);
         UpdateShortlinkCommand command = new UpdateShortlinkCommand(id, originalUrl);
 
