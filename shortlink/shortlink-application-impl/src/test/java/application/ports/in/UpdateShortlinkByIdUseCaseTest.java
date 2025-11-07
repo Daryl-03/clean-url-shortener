@@ -2,6 +2,7 @@ package application.ports.in;
 
 import application.mocks.FakeShortlinkRepository;
 import dev.richryl.shortlink.Shortlink;
+import dev.richryl.shortlink.application.exceptions.ShortlinkNotFoundException;
 import dev.richryl.shortlink.application.ports.dto.UpdateShortlinkCommand;
 import dev.richryl.shortlink.application.ports.in.UpdateShortlinkByIdInteractor;
 import dev.richryl.shortlink.application.ports.in.UpdateShortlinkByIdUseCase;
@@ -12,8 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UpdateShortlinkByIdUseCaseTest {
     private final ShortlinkRepository shortlinkRepository = new FakeShortlinkRepository();
@@ -47,6 +47,17 @@ public class UpdateShortlinkByIdUseCaseTest {
         assertNotNull(updated);
         assertEquals(updatedUrl, updated.getOriginalUrl());
         assertEquals("abc123", updatedShortlink.getShortCode());
+    }
+
+    @Test
+    @DisplayName("Should throw shortlinkNotFound exception when given non-existing id")
+    void should_throw_shortlinkNotFound_exception_when_given_non_existing_id() {
+        UpdateShortlinkCommand command = new UpdateShortlinkCommand(
+            UUID.randomUUID(),
+            "https://nonexisting.com"
+        );
+        assertThrows( ShortlinkNotFoundException.class, ()->updateShortlinkByIdUseCase.handle(command));
+
     }
 
 }

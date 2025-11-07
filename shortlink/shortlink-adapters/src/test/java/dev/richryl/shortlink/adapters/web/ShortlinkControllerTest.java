@@ -2,6 +2,7 @@ package dev.richryl.shortlink.adapters.web;
 
 import dev.richryl.bootstrap.ShortlinkApp;
 import dev.richryl.shortlink.Shortlink;
+import dev.richryl.shortlink.application.exceptions.ShortlinkNotFoundException;
 import dev.richryl.shortlink.application.ports.dto.UpdateShortlinkCommand;
 import dev.richryl.shortlink.application.ports.in.CreateShortlinkUseCase;
 import dev.richryl.shortlink.application.ports.in.DeleteShortlinkByIdUseCase;
@@ -12,20 +13,18 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @WebMvcTest(ShortlinkController.class)
@@ -165,6 +164,30 @@ public class ShortlinkControllerTest {
                 .andExpect(jsonPath("$.originalUrl").value(originalUrl));
 
         verify(updateShortlinkByIdUseCase, times(1)).handle(command);
+    }
+
+    @Test
+    @DisplayName("When updating non existing shortlinkn, return 404 Not Found")
+    void returnNotFoundWhenUpdatingNonExistingShortlink() throws Exception {
+        UUID nonExistingId = UUID.randomUUID();
+        String originalUrl = "https://example.com/some/long/path";
+        String requestBody = String.format("""
+                {
+                    "id": "%s",
+                    "url": "%s"
+                }
+                """, nonExistingId, originalUrl);
+        when(updateShortlinkByIdUseCase.handle(any(UpdateShortlinkCommand.class))
+        ).thenThrow(new ShortlinkNotFoundException("Shortlink not found"));
+
+        mockMvc.perform(
+                        put("/api/shortlinks").contentType(APPLICATION_JSON)
+                                .content(requestBody)
+                )
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(jsonPath("$.code").exists())
+                .andExpect(jsonPath("$.status").exists());
     }
 
 }

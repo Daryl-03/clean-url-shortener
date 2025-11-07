@@ -42,4 +42,9 @@ public class AppConfig {
     public DeleteShortlinkByIdUseCase deleteShortlinkByIdUseCase(ShortlinkRepository shortlinkRepository) {
         return new DeleteShortlinkByIdInteractor(shortlinkRepository);
     }
+
+    @Bean
+    public UpdateShortlinkByIdUseCase updateShortlinkByIdUseCase(ShortlinkRepository shortlinkRepository) {
+        return new UpdateShortlinkByIdInteractor(shortlinkRepository);
+    }
 }

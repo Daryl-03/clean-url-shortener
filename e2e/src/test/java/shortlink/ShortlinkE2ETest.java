@@ -127,12 +127,14 @@ public class ShortlinkE2ETest {
 
         String updateRequestBody = """
                 {
+                    "id": "%s",
                     "url": "https://example.com/updated/path"
                 }
                 """;
+        updateRequestBody = String.format(updateRequestBody, id);
 
         webTestClient.put()
-                .uri("/api/shortlinks/{id}", id)
+                .uri("/api/shortlinks")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updateRequestBody)
                 .exchange()
@@ -140,6 +142,31 @@ public class ShortlinkE2ETest {
                 .expectBody()
                 .jsonPath("$.originalUrl").isEqualTo("https://example.com/updated/path");
 
+    }
+
+    @Test
+    @DisplayName("When updating a non-existing shortlink, return 404 Not Found")
+    void returnNotFoundWhenUpdatingNonExistingShortlink() {
+        String nonExistingId = UUID.randomUUID().toString();
+
+        String updateRequestBody = """
+                {
+                    "id": "%s",
+                    "url": "https://example.com/updated/path"
+                }
+                """;
+        updateRequestBody = String.format(updateRequestBody, nonExistingId);
+
+        webTestClient.put()
+                .uri("/api/shortlinks")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(updateRequestBody)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                .jsonPath("$.error").exists()
+                .jsonPath("$.code").exists()
+                .jsonPath("$.status").exists();
     }
 
     @Test
