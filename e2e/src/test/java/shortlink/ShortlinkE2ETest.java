@@ -226,4 +226,27 @@ public class ShortlinkE2ETest {
                 .expectStatus().isNotFound();
     }
 
+    @Test
+    @DisplayName("Redirect to original URL when requesting with short code")
+    void redirectToOriginalUrlUsingShortCode() {
+        String requestBody = """
+                {
+                    "url": "https://example.com/some/long/path"
+                }
+                """;
+
+        ResponseData result = createShortlinkRequest(requestBody);
+
+        assertNotNull(result.data().getResponseBody());
+
+        String shortCode = (String) result.data().getResponseBody().get("shortCode");
+
+        assertNotNull(shortCode);
+
+        webTestClient.get()
+                .uri("/s/{shortCode}", shortCode) //
+                .exchange()
+                .expectStatus().is3xxRedirection()
+                .expectHeader().valueEquals("Location", "https://example.com/some/long/path");
+    }
 }

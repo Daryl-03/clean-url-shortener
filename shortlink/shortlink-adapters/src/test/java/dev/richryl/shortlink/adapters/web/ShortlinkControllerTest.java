@@ -4,10 +4,7 @@ import dev.richryl.bootstrap.ShortlinkApp;
 import dev.richryl.shortlink.Shortlink;
 import dev.richryl.shortlink.application.exceptions.ShortlinkNotFoundException;
 import dev.richryl.shortlink.application.ports.dto.UpdateShortlinkCommand;
-import dev.richryl.shortlink.application.ports.in.CreateShortlinkUseCase;
-import dev.richryl.shortlink.application.ports.in.DeleteShortlinkByIdUseCase;
-import dev.richryl.shortlink.application.ports.in.GetShortlinkByIdUseCase;
-import dev.richryl.shortlink.application.ports.in.UpdateShortlinkByIdUseCase;
+import dev.richryl.shortlink.application.ports.in.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,8 +20,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @WebMvcTest(ShortlinkController.class)
@@ -49,7 +45,7 @@ public class ShortlinkControllerTest {
         when(createShortlinkUseCase.handle(anyString()))
                 .thenAnswer(invocation -> {
                     String url = invocation.getArgument(0);
-                    return new Shortlink(UUID.randomUUID() ,url, "abc123");
+                    return new Shortlink(UUID.randomUUID(), url, "abc123");
                 });
     }
 
@@ -64,11 +60,11 @@ public class ShortlinkControllerTest {
                 """, originalUrl);
 
         mockMvc.perform(post("/api/shortlinks")
-                .contentType(APPLICATION_JSON)
-                .content(requestBody))
+                        .contentType(APPLICATION_JSON)
+                        .content(requestBody))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.originalUrl").value(originalUrl))
-        .andExpect(jsonPath("$.shortCode").value("abc123"));
+                .andExpect(jsonPath("$.shortCode").value("abc123"));
 
         verify(createShortlinkUseCase, times(1)).handle(anyString());
     }
@@ -97,7 +93,7 @@ public class ShortlinkControllerTest {
 
         mockMvc.perform(post("/api/shortlinks")
                         .contentType(APPLICATION_JSON)
-                        )
+                )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").exists())
                 .andExpect(jsonPath("$.code").value("MISSING_REQUEST_BODY"))
@@ -113,7 +109,7 @@ public class ShortlinkControllerTest {
         UUID id = UUID.randomUUID();
 
         when(getShortlinkByIdUseCase.handle(any(UUID.class))
-        ).thenReturn(new Shortlink(id , originalUrl, shortcode));
+        ).thenReturn(new Shortlink(id, originalUrl, shortcode));
 
         mockMvc.perform(get("/api/shortlinks/{id}", id)
                         .contentType(APPLICATION_JSON))
@@ -156,8 +152,8 @@ public class ShortlinkControllerTest {
         when(updateShortlinkByIdUseCase.handle(command)).thenReturn(object);
 
         mockMvc.perform(
-                put("/api/shortlinks").contentType(APPLICATION_JSON)
-                .content(requestBody)
+                        put("/api/shortlinks").contentType(APPLICATION_JSON)
+                                .content(requestBody)
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(object.getId().toString()))
@@ -189,5 +185,7 @@ public class ShortlinkControllerTest {
                 .andExpect(jsonPath("$.code").exists())
                 .andExpect(jsonPath("$.status").exists());
     }
+
+
 
 }

@@ -47,4 +47,9 @@ public class AppConfig {
     public UpdateShortlinkByIdUseCase updateShortlinkByIdUseCase(ShortlinkRepository shortlinkRepository) {
         return new UpdateShortlinkByIdInteractor(shortlinkRepository);
     }
+
+    @Bean
+    public ResolveShortlinkUseCase resolveShortlinkUseCase(ShortlinkRepository shortlinkRepository) {
+        return new ResolveShortlinkInteractor(shortlinkRepository);
+    }
 }
