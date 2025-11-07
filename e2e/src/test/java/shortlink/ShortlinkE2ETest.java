@@ -108,7 +108,39 @@ public class ShortlinkE2ETest {
                 .jsonPath("$.shortCode").isEqualTo(shortCode);
     }
 
+    @Test
+    @DisplayName("Update previously created shortlink by id")
+    void updatePreviouslyCreatedShortlinkById() {
+        String requestBody = """
+                {
+                    "url": "https://example.com/some/long/path"
+                }
+                """;
 
+        ResponseData result = createShortlinkRequest(requestBody);
+
+        assertNotNull(result.data().getResponseBody());
+
+        String id = (String) result.data().getResponseBody().get("id");
+
+        assertNotNull(id);
+
+        String updateRequestBody = """
+                {
+                    "url": "https://example.com/updated/path"
+                }
+                """;
+
+        webTestClient.put()
+                .uri("/api/shortlinks/{id}", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(updateRequestBody)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.originalUrl").isEqualTo("https://example.com/updated/path");
+
+    }
 
     @Test
     @DisplayName("When retrieving a non-existing shortlink, return 404 Not Found")

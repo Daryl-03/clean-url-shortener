@@ -2,9 +2,12 @@ package dev.richryl.shortlink.adapters.web;
 
 import dev.richryl.bootstrap.ShortlinkApp;
 import dev.richryl.shortlink.Shortlink;
+import dev.richryl.shortlink.adapters.web.dto.UpdateShortlinkRequest;
+import dev.richryl.shortlink.application.ports.dto.UpdateShortlinkCommand;
 import dev.richryl.shortlink.application.ports.in.CreateShortlinkUseCase;
 import dev.richryl.shortlink.application.ports.in.DeleteShortlinkByIdUseCase;
 import dev.richryl.shortlink.application.ports.in.GetShortlinkByIdUseCase;
+import dev.richryl.shortlink.application.ports.in.UpdateShortlinkByIdUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,6 +42,8 @@ public class ShortlinkControllerTest {
     private GetShortlinkByIdUseCase getShortlinkByIdUseCase;
     @MockitoBean
     private DeleteShortlinkByIdUseCase deleteShortlinkByIdUseCase;
+    @MockitoBean
+    private UpdateShortlinkByIdUseCase updateShortlinkByIdUseCase;
 
     @BeforeEach
     public void setUp() {
@@ -132,6 +137,35 @@ public class ShortlinkControllerTest {
                 .andExpect(status().isNoContent());
 
         verify(deleteShortlinkByIdUseCase, times(1)).handle(id);
+    }
+
+    @Test
+    @DisplayName("Update shortlink when it exists")
+    void updateShortlinkWhenExists() throws Exception {
+        String originalUrl = "https://example.com/some/long/path";
+        String shortcode = "abc123";
+        UUID id = UUID.randomUUID();
+
+        String requestBody = String.format("""
+                {
+                    "id": "%s",
+                    "url": "%s"
+                }
+                """, id.toString(), originalUrl);
+        Shortlink object = new Shortlink(id, originalUrl, shortcode);
+        UpdateShortlinkCommand command = new UpdateShortlinkCommand(id, originalUrl);
+
+        when(updateShortlinkByIdUseCase.handle(command)).thenReturn(object);
+
+        mockMvc.perform(
+                put("/api/shortlinks").contentType(APPLICATION_JSON)
+                .content(requestBody)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(object.getId().toString()))
+                .andExpect(jsonPath("$.originalUrl").value(originalUrl));
+
+        verify(updateShortlinkByIdUseCase, times(1)).handle(command);
     }
 
 }
