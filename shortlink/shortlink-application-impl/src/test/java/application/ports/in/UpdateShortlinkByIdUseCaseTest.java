@@ -43,7 +43,9 @@ public class UpdateShortlinkByIdUseCaseTest {
         assertNotNull(updatedShortlink);
         assertEquals(updatedUrl, updatedShortlink.getOriginalUrl());
 
-        assertEquals(updatedUrl, shortlinkRepository.findById(existingId).get().getOriginalUrl());
+        Shortlink updated = shortlinkRepository.findById(existingId).orElse(null);
+        assertNotNull(updated);
+        assertEquals(updatedUrl, updated.getOriginalUrl());
         assertEquals("abc123", updatedShortlink.getShortCode());
     }
 

@@ -45,7 +45,7 @@ public class FakeShortlinkRepository implements ShortlinkRepository {
     }
 
     @Override
-    public Shortlink update(Shortlink updatedShortlink) {
+    public Optional<Shortlink> update(Shortlink updatedShortlink) {
         return shortlinks.stream()
                 .filter(shortlink -> shortlink.getId().equals(updatedShortlink.getId()))
                 .findFirst()
@@ -53,8 +53,7 @@ public class FakeShortlinkRepository implements ShortlinkRepository {
                     shortlinks.remove(existingShortlink);
                     shortlinks.add(updatedShortlink);
                     return updatedShortlink;
-                })
-                .orElse(null);
+                });
     }
 
 }
