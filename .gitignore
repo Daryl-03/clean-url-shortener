@@ -41,3 +41,4 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+/bootstrap-spring/src/test/resources/private-key.pem

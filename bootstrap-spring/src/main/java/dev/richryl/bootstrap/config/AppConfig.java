@@ -1,4 +1,4 @@
-package dev.richryl.bootstrap;
+package dev.richryl.bootstrap.config;
 
 import dev.richryl.shortlink.adapters.persistence.InMemoryShortlinkRepository;
 import dev.richryl.shortlink.adapters.services.Base62SlugGenerator;

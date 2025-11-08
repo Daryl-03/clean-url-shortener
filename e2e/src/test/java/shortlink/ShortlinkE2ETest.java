@@ -9,6 +9,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import utils.AppConstants;
 
 import java.util.Map;
 import java.util.UUID;
@@ -21,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 )
 public class ShortlinkE2ETest {
 
+    private final String TOKEN = AppConstants.JWT_TOKEN;
+
     @Autowired
     private WebTestClient webTestClient;
 
@@ -31,6 +34,7 @@ public class ShortlinkE2ETest {
         EntityExchangeResult<Map<String, Object>> data = webTestClient.post()
                 .uri("/api/shortlinks")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + TOKEN)
                 .bodyValue(requestBody)
                 .exchange()
                 .expectStatus().isCreated()
@@ -52,6 +56,7 @@ public class ShortlinkE2ETest {
         webTestClient.post()
                 .uri("/api/shortlinks")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + TOKEN)
                 .bodyValue(requestBody)
                 .exchange()
                 .expectStatus().isCreated()
@@ -73,6 +78,7 @@ public class ShortlinkE2ETest {
         webTestClient.post()
                 .uri("/api/shortlinks")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + TOKEN)
                 .bodyValue(requestBody)
                 .exchange()
                 .expectStatus().isBadRequest()
@@ -101,6 +107,7 @@ public class ShortlinkE2ETest {
 
         webTestClient.get()
                 .uri("/api/shortlinks/{id}", id)
+                .header("Authorization", "Bearer " + TOKEN)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
@@ -136,6 +143,7 @@ public class ShortlinkE2ETest {
         webTestClient.put()
                 .uri("/api/shortlinks")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + TOKEN)
                 .bodyValue(updateRequestBody)
                 .exchange()
                 .expectStatus().isOk()
@@ -160,6 +168,7 @@ public class ShortlinkE2ETest {
         webTestClient.put()
                 .uri("/api/shortlinks")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + TOKEN)
                 .bodyValue(updateRequestBody)
                 .exchange()
                 .expectStatus().isNotFound()
@@ -176,6 +185,7 @@ public class ShortlinkE2ETest {
 
         webTestClient.get()
                 .uri("/api/shortlinks/{nonExistingId}", nonExistingId)
+                .header("Authorization", "Bearer " + TOKEN)
                 .exchange()
                 .expectStatus().isNotFound()
                 .expectBody()
@@ -190,6 +200,7 @@ public class ShortlinkE2ETest {
         String invalidId = "invalid-uuid-format";
         webTestClient.get()
                 .uri("/api/shortlinks/{id}", invalidId)
+                .header("Authorization", "Bearer " + TOKEN)
                 .exchange()
                 .expectStatus().isBadRequest()
                 .expectBody()
@@ -217,11 +228,13 @@ public class ShortlinkE2ETest {
 
         webTestClient.delete()
                 .uri("/api/shortlinks/{id}", id)
+                .header("Authorization", "Bearer " + TOKEN)
                 .exchange()
                 .expectStatus().isNoContent();
 
         webTestClient.get()
                 .uri("/api/shortlinks/{id}", id)
+                .header("Authorization", "Bearer " + TOKEN)
                 .exchange()
                 .expectStatus().isNotFound();
     }
@@ -244,7 +257,7 @@ public class ShortlinkE2ETest {
         assertNotNull(shortCode);
 
         webTestClient.get()
-                .uri("/s/{shortCode}", shortCode) //
+                .uri("/s/{shortCode}", shortCode)
                 .exchange()
                 .expectStatus().is3xxRedirection()
                 .expectHeader().valueEquals("Location", "https://example.com/some/long/path");
