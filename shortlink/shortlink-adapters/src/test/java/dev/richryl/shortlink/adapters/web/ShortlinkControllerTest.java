@@ -1,8 +1,7 @@
 package dev.richryl.shortlink.adapters.web;
 
-
-import dev.richryl.shortlink.Shortlink;
 import dev.richryl.shortlink.application.exceptions.ShortlinkNotFoundException;
+import dev.richryl.shortlink.application.ports.dto.ShortlinkResponse;
 import dev.richryl.shortlink.application.ports.dto.UpdateShortlinkCommand;
 import dev.richryl.shortlink.application.ports.in.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,7 +50,7 @@ public class ShortlinkControllerTest {
         when(createShortlinkUseCase.handle(anyString()))
                 .thenAnswer(invocation -> {
                     String url = invocation.getArgument(0);
-                    return new Shortlink(UUID.randomUUID(), url, "abc123");
+                    return new ShortlinkResponse(UUID.randomUUID(), url, "abc123");
                 });
     }
 
@@ -115,7 +114,7 @@ public class ShortlinkControllerTest {
         UUID id = UUID.randomUUID();
 
         when(getShortlinkByIdUseCase.handle(any(UUID.class))
-        ).thenReturn(new Shortlink(id, originalUrl, shortcode));
+        ).thenReturn(new ShortlinkResponse(id, originalUrl, shortcode));
 
         mockMvc.perform(get("/api/shortlinks/{id}", id)
                         .contentType(APPLICATION_JSON))
@@ -152,7 +151,7 @@ public class ShortlinkControllerTest {
                     "url": "%s"
                 }
                 """, id, originalUrl);
-        Shortlink object = new Shortlink(id, originalUrl, shortcode);
+        ShortlinkResponse object = new ShortlinkResponse(id, originalUrl, shortcode);
         UpdateShortlinkCommand command = new UpdateShortlinkCommand(id, originalUrl);
 
         when(updateShortlinkByIdUseCase.handle(command)).thenReturn(object);
@@ -162,7 +161,7 @@ public class ShortlinkControllerTest {
                                 .content(requestBody)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(object.getId().toString()))
+                .andExpect(jsonPath("$.id").value(object.id().toString()))
                 .andExpect(jsonPath("$.originalUrl").value(originalUrl));
 
         verify(updateShortlinkByIdUseCase, times(1)).handle(command);

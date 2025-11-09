@@ -1,6 +1,6 @@
 package dev.richryl.shortlink.adapters.web;
 
-import dev.richryl.shortlink.Shortlink;
+import dev.richryl.shortlink.application.ports.dto.ShortlinkResponse;
 import dev.richryl.shortlink.application.ports.in.ResolveShortlinkUseCase;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -22,9 +22,9 @@ public class RedirectController {
 
     @GetMapping("/{shortCode}")
     public ResponseEntity<Void> redirectToOriginalUrl(@PathVariable String shortCode) {
-        Shortlink shortlink = resolveShortlinkUseCase.handle(shortCode);
+        ShortlinkResponse shortlink = resolveShortlinkUseCase.handle(shortCode);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", shortlink.getOriginalUrl());
+        headers.add("Location", shortlink.originalUrl());
         return ResponseEntity.status(HttpStatus.FOUND).headers(headers).build();
     }
 }

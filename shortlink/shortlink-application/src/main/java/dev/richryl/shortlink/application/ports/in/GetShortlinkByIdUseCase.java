@@ -1,10 +1,11 @@
 package dev.richryl.shortlink.application.ports.in;
 
-import dev.richryl.shortlink.Shortlink;
+
 import dev.richryl.shortlink.application.exceptions.ShortlinkNotFoundException;
+import dev.richryl.shortlink.application.ports.dto.ShortlinkResponse;
 
 import java.util.UUID;
 
 public interface GetShortlinkByIdUseCase {
-    Shortlink handle(UUID shortlinkId) throws ShortlinkNotFoundException;
+    ShortlinkResponse handle(UUID shortlinkId) throws ShortlinkNotFoundException;
 }

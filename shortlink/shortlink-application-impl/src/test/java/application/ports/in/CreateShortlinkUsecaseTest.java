@@ -4,6 +4,7 @@ import application.mocks.FakeIdGenerator;
 import application.mocks.FakeShortlinkRepository;
 import application.mocks.FakeSlugGenerator;
 import dev.richryl.shortlink.Shortlink;
+import dev.richryl.shortlink.application.ports.dto.ShortlinkResponse;
 import dev.richryl.shortlink.application.ports.in.CreateShortlinkInteractor;
 import dev.richryl.shortlink.application.ports.in.CreateShortlinkUseCase;
 import dev.richryl.shortlink.application.ports.out.ShortlinkIdGenerator;
@@ -11,6 +12,7 @@ import dev.richryl.shortlink.application.ports.out.ShortlinkRepository;
 import dev.richryl.shortlink.application.ports.out.SlugGenerator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,7 +26,7 @@ public class CreateShortlinkUsecaseTest {
             shortlinkIdGenerator
     );
 
-    private Shortlink computeShortlink(String url) {
+    private ShortlinkResponse computeShortlink(String url) {
         return createShortlinkUseCase.handle(url);
     }
 
@@ -33,22 +35,22 @@ public class CreateShortlinkUsecaseTest {
     void should_create_shortlink_when_given_validUrl() {
         String validUrl = "https://example.com";
 
-        Shortlink shortlink = computeShortlink(validUrl);
+        ShortlinkResponse shortlink = computeShortlink(validUrl);
         assertNotNull(shortlink);
-        assertEquals(validUrl, shortlink.getOriginalUrl());
-        assertNotNull(shortlink.getShortCode());
+        assertEquals(validUrl, shortlink.originalUrl());
+        assertNotNull(shortlink.shortCode());
     }
 
     @Test
     @DisplayName("Should persist shortlink for later retrieval")
     void should_persist_shortlink_for_later_retrieval() {
         String validUrl = "https://example.com";
-        Shortlink shortlink1 = computeShortlink(validUrl);
+        ShortlinkResponse shortlink1 = computeShortlink(validUrl);
 
-        Shortlink retrievedShortlink = shortlinkRepository.findByShortCode(shortlink1.getShortCode()).orElse(null);
+        Shortlink retrievedShortlink = shortlinkRepository.findByShortCode(shortlink1.shortCode()).orElse(null);
         assertNotNull(retrievedShortlink);
-        assertEquals(shortlink1.getOriginalUrl(), retrievedShortlink.getOriginalUrl());
-        assertEquals(shortlink1.getShortCode(), retrievedShortlink.getShortCode());
+        assertEquals(shortlink1.originalUrl(), retrievedShortlink.getOriginalUrl());
+        assertEquals(shortlink1.shortCode(), retrievedShortlink.getShortCode());
     }
 
 
