@@ -39,9 +39,17 @@ public class IdentityE2ETest {
         webTestClient.post()
                 .uri("/api/shortlinks")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer invalid")
                 .bodyValue(requestBody)
                 .exchange()
                 .expectStatus().isUnauthorized();
+
+        webTestClient.post()
+                .uri("/api/shortlinks")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(requestBody)
+                .exchange()
+                .expectStatus().isForbidden();
     }
 
     @Test
