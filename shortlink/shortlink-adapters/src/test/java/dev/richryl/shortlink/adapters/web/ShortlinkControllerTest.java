@@ -1,6 +1,6 @@
 package dev.richryl.shortlink.adapters.web;
 
-import dev.richryl.bootstrap.ShortlinkApp;
+
 import dev.richryl.shortlink.Shortlink;
 import dev.richryl.shortlink.application.exceptions.ShortlinkNotFoundException;
 import dev.richryl.shortlink.application.ports.dto.UpdateShortlinkCommand;
@@ -9,8 +9,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ContextConfiguration;
+
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -23,8 +26,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-@WebMvcTest(ShortlinkController.class)
-@ContextConfiguration(classes = {ShortlinkController.class, ShortlinkApp.class})
+@WebMvcTest(
+        controllers = ShortlinkController.class
+)
+@ContextConfiguration(classes = {ShortlinkController.class, GlobalShortlinkExceptionHandler.class})
+@AutoConfigureMockMvc(addFilters = false)
 public class ShortlinkControllerTest {
 
     @Autowired
