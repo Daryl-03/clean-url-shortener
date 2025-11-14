@@ -1,7 +1,6 @@
 package dev.richryl.identity.adapters.filter;
 
 import dev.richryl.identity.adapters.mocks.DummyController;
-import dev.richryl.identity.adapters.web.IdentityController;
 import dev.richryl.identity.application.ports.in.CreateUserUseCase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,7 +22,7 @@ import static org.mockito.ArgumentMatchers.anyString;
         controllers = DummyController.class
 )
 @ContextConfiguration(classes = {DummyController.class, EnsureUserProvisioningFilter.class})
-@AutoConfigureMockMvc(addFilters = true)
+@AutoConfigureMockMvc
 public class EnsureUserProvisioningFilterTest {
 
     @Autowired

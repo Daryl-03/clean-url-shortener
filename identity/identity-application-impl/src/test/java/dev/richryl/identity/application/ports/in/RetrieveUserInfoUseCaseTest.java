@@ -23,7 +23,7 @@ import static org.mockito.Mockito.verify;
 public class RetrieveUserInfoUseCaseTest {
 
     private RetrieveUserInfoUseCase retrieveUserInfoUseCase;
-    private UUID firtstUserId = UUID.randomUUID();
+    private final UUID firtstUserId = UUID.randomUUID();
     private LoggerPort loggerPort;
 
     @BeforeEach
