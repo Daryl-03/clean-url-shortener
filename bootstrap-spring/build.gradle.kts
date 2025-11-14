@@ -20,6 +20,15 @@ dependencies {
     implementation(project(":shortlink:shortlink-application-impl"))
     implementation(project(":shortlink:shortlink-adapters"))
 
+    implementation(project(":identity:identity-application"))
+    implementation(project(":identity:identity-application-impl"))
+    implementation(project(":identity:identity-adapters"))
+
+    implementation(project(":common-adapters"))
+
+    implementation("org.springframework.security:spring-security-oauth2-jose:7.0.0-RC3")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+
 //    spring boot
     implementation("org.springframework.boot:spring-boot-starter-web")
     testImplementation("org.springframework.boot:spring-boot-starter-test")

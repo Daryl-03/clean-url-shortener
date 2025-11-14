@@ -1,7 +1,7 @@
 package dev.richryl.shortlink.application.ports.in;
 
-import dev.richryl.shortlink.Shortlink;
 import dev.richryl.shortlink.application.exceptions.ShortlinkNotFoundException;
+import dev.richryl.shortlink.application.ports.dto.ShortlinkResponse;
 import dev.richryl.shortlink.application.ports.out.ShortlinkRepository;
 
 import java.util.UUID;
@@ -14,8 +14,8 @@ public class GetShortlinkByIdInteractor implements GetShortlinkByIdUseCase {
     }
 
     @Override
-    public Shortlink handle(UUID shortlinkId) {
-                return shortlinkRepository.findById(shortlinkId)
-                .orElseThrow(() -> new ShortlinkNotFoundException("Shortlink not found for id: " + shortlinkId));
+    public ShortlinkResponse handle(UUID shortlinkId) {
+                return ShortlinkResponse.fromDomain(shortlinkRepository.findById(shortlinkId)
+                .orElseThrow(() -> new ShortlinkNotFoundException("Shortlink not found for id: " + shortlinkId)));
     }
 }

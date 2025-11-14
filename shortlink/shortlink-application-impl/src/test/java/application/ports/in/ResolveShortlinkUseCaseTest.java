@@ -3,6 +3,7 @@ package application.ports.in;
 import application.mocks.FakeShortlinkRepository;
 import dev.richryl.shortlink.Shortlink;
 import dev.richryl.shortlink.application.exceptions.ShortlinkNotFoundException;
+import dev.richryl.shortlink.application.ports.dto.ShortlinkResponse;
 import dev.richryl.shortlink.application.ports.in.ResolveShortlinkInteractor;
 import dev.richryl.shortlink.application.ports.in.ResolveShortlinkUseCase;
 import dev.richryl.shortlink.application.ports.out.ShortlinkRepository;
@@ -32,10 +33,10 @@ public class ResolveShortlinkUseCaseTest {
     @Test
     @DisplayName("Should resolve shortlink by short code")
     void shouldResolveShortlinkByShortCode() {
-        Shortlink resolvedShortlink = resolveShortlinkUseCase.handle("exmpl");
+        ShortlinkResponse resolvedShortlink = resolveShortlinkUseCase.handle("exmpl");
 
         assertNotNull(resolvedShortlink);
-        assertEquals("http://example.com", resolvedShortlink.getOriginalUrl());
+        assertEquals("http://example.com", resolvedShortlink.originalUrl());
 
     }
 

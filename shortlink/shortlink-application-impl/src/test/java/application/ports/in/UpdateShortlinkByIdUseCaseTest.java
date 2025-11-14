@@ -3,6 +3,7 @@ package application.ports.in;
 import application.mocks.FakeShortlinkRepository;
 import dev.richryl.shortlink.Shortlink;
 import dev.richryl.shortlink.application.exceptions.ShortlinkNotFoundException;
+import dev.richryl.shortlink.application.ports.dto.ShortlinkResponse;
 import dev.richryl.shortlink.application.ports.dto.UpdateShortlinkCommand;
 import dev.richryl.shortlink.application.ports.in.UpdateShortlinkByIdInteractor;
 import dev.richryl.shortlink.application.ports.in.UpdateShortlinkByIdUseCase;
@@ -39,14 +40,14 @@ public class UpdateShortlinkByIdUseCaseTest {
             existingId,
             updatedUrl
         );
-        Shortlink updatedShortlink = updateShortlinkByIdUseCase.handle(command);
+        ShortlinkResponse updatedShortlink = updateShortlinkByIdUseCase.handle(command);
         assertNotNull(updatedShortlink);
-        assertEquals(updatedUrl, updatedShortlink.getOriginalUrl());
+        assertEquals(updatedUrl, updatedShortlink.originalUrl());
 
         Shortlink updated = shortlinkRepository.findById(existingId).orElse(null);
         assertNotNull(updated);
         assertEquals(updatedUrl, updated.getOriginalUrl());
-        assertEquals("abc123", updatedShortlink.getShortCode());
+        assertEquals("abc123", updatedShortlink.shortCode());
     }
 
     @Test

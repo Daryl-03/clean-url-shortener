@@ -7,8 +7,13 @@ The project demonstrates modular boundaries (Domain, Application, Adapters, Fram
 
 ## 🚀 Features
 - [x] Create a shortlink from a long URL
-- [] Retrieve original URL from shortlink
-- [] Toggle/disable a shortlink
+- [x] Retrieve the original URL from a shortlink
+- [x] Update a shortlink's data
+- [x] Delete a shortlink
+- [x] Redirect to original URL
+- [x] In-memory data storage (can be swapped with DB)
+- [x] Authentication
+- [] User profiles (upcoming)
 
 ---
 

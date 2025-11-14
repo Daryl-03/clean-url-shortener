@@ -1,8 +1,8 @@
 package dev.richryl.shortlink.adapters.web;
 
-import dev.richryl.shortlink.Shortlink;
 import dev.richryl.shortlink.adapters.web.dto.CreateShortlinkRequest;
 import dev.richryl.shortlink.adapters.web.dto.UpdateShortlinkRequest;
+import dev.richryl.shortlink.application.ports.dto.ShortlinkResponse;
 import dev.richryl.shortlink.application.ports.in.CreateShortlinkUseCase;
 import dev.richryl.shortlink.application.ports.in.DeleteShortlinkByIdUseCase;
 import dev.richryl.shortlink.application.ports.in.GetShortlinkByIdUseCase;
@@ -30,12 +30,12 @@ public class ShortlinkController {
     }
 
     @PostMapping()
-    public ResponseEntity<Shortlink> createShortlink(@RequestBody @Valid CreateShortlinkRequest request) {
+    public ResponseEntity<ShortlinkResponse> createShortlink(@RequestBody @Valid CreateShortlinkRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(createShortlinkUseCase.handle(request.url()));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Shortlink> getShortlink(@PathVariable("id") UUID id) {
+    public ResponseEntity<ShortlinkResponse> getShortlink(@PathVariable("id") UUID id) {
         return ResponseEntity.status(HttpStatus.OK).body(getShortlinkByIdUseCase.handle(id));
     }
 
@@ -46,7 +46,7 @@ public class ShortlinkController {
     }
 
     @PutMapping()
-    public ResponseEntity<Shortlink> updateShortlink(@RequestBody @Valid UpdateShortlinkRequest request) {
+    public ResponseEntity<ShortlinkResponse> updateShortlink(@RequestBody @Valid UpdateShortlinkRequest request) {
         return ResponseEntity.status(HttpStatus.OK).body(updateShortlinkByIdUseCase.handle(request.toCommand()));
     }
 

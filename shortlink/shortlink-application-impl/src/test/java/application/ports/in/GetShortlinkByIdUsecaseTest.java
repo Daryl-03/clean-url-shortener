@@ -3,6 +3,7 @@ package application.ports.in;
 import application.mocks.FakeShortlinkRepository;
 import dev.richryl.shortlink.Shortlink;
 import dev.richryl.shortlink.application.exceptions.ShortlinkNotFoundException;
+import dev.richryl.shortlink.application.ports.dto.ShortlinkResponse;
 import dev.richryl.shortlink.application.ports.in.GetShortlinkByIdInteractor;
 import dev.richryl.shortlink.application.ports.in.GetShortlinkByIdUseCase;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,11 +37,11 @@ public class GetShortlinkByIdUsecaseTest {
     @DisplayName("Should return shortlink when given existing id")
     void should_return_shortlink_when_given_existing_id() {
 
-        Shortlink shortlink = getShortlinkByIdUseCase.handle(firstId);
+        ShortlinkResponse shortlink = getShortlinkByIdUseCase.handle(firstId);
 
         assertNotNull(shortlink);
-        assertEquals(firstId, shortlink.getId());
-        assertEquals("https://example.com", shortlink.getOriginalUrl());
+        assertEquals(firstId, shortlink.id());
+        assertEquals("https://example.com", shortlink.originalUrl());
     }
 
     @Test

@@ -1,7 +1,7 @@
 package dev.richryl.shortlink.adapters.web;
 
 import dev.richryl.bootstrap.ShortlinkApp;
-import dev.richryl.shortlink.Shortlink;
+import dev.richryl.shortlink.application.ports.dto.ShortlinkResponse;
 import dev.richryl.shortlink.application.ports.in.ResolveShortlinkUseCase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ public class RedirectControllerTest {
         String shortcode = "abc123";
 
         when(resolveShortlinkUseCase.handle(anyString())
-        ).thenReturn(new Shortlink(UUID.randomUUID(), originalUrl, shortcode));
+        ).thenReturn(new ShortlinkResponse(UUID.randomUUID(), originalUrl, shortcode));
 
         mockMvc.perform(get("/s/{shortcode}", shortcode)
                         .contentType(APPLICATION_JSON))
