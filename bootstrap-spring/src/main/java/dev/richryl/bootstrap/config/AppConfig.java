@@ -19,6 +19,7 @@ import dev.richryl.shortlink.application.ports.out.ShortlinkRepository;
 import dev.richryl.shortlink.application.ports.out.SlugGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 
 @Configuration
@@ -30,6 +31,7 @@ public class AppConfig {
     }
 
     @Bean
+    @Primary
     public ShortlinkIdGenerator shortlinkIdGenerator() {
         return new UuidIdGenerator();
     }
