@@ -1,6 +1,5 @@
 package identity;
 
-
 import dev.richryl.bootstrap.ShortlinkApp;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +14,8 @@ import utils.AppConstants;
 
 
 import java.util.Map;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest(
         classes = ShortlinkApp.class,
@@ -102,4 +103,21 @@ public class IdentityE2ETest {
                 .expectStatus().is3xxRedirection()
                 .expectHeader().valueEquals("Location", "https://example.com/some/long/path");
     }
+
+    @Test
+    @DisplayName("Should return user identity information when requested with valid jwt token")
+    void shouldReturnUserIdentityInformationWhenRequestedWithValidJwtToken() {
+        webTestClient.get()
+                .uri("/api/identity/me")
+                .header("Authorization", "Bearer " + TOKEN)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.userId").isEqualTo("123e4567-e89b-12d3-a456-426614174000")
+                .jsonPath("$.username").isEqualTo("testuser")
+                .jsonPath("$.email").exists()
+                .jsonPath("$.firstName").exists()
+                .jsonPath("$.lastName").exists();
+    }
+
 }

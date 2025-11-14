@@ -22,3 +22,7 @@ findProject(":shortlink:shortlink-adapters")?.name = "shortlink-adapters"
 include("e2e")
 include("bootstrap-spring")
 include("shortlink:shortlink-application-impl")
+include("identity:identity-adapters")
+include("identity:identity-application")
+include("identity:identity-application-impl")
+include("identity:identity-domain")
