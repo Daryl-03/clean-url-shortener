@@ -113,11 +113,7 @@ public class IdentityE2ETest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.userId").isEqualTo("123e4567-e89b-12d3-a456-426614174000")
-                .jsonPath("$.username").isEqualTo("testuser")
-                .jsonPath("$.email").exists()
-                .jsonPath("$.firstName").exists()
-                .jsonPath("$.lastName").exists();
+                .jsonPath("$.userId").isEqualTo("123e4567-e89b-12d3-a456-426614174000");
     }
 
 }

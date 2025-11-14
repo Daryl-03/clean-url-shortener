@@ -1,6 +1,5 @@
-package dev.richryl.identity.application.ports.mocks;
+package dev.richryl.identity.adapters.persistence;
 
-import dev.richryl.identity.application.ports.dto.UserInfoResponse;
 import dev.richryl.identity.application.ports.out.UserRepository;
 import dev.richryl.identity.domain.User;
 
@@ -8,14 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class FakeUserRepository implements UserRepository {
+public class InMemoryUserRepository implements UserRepository {
     private final List<User> users;
 
-    public FakeUserRepository(List<User> users) {
+    public InMemoryUserRepository(List<User> users) {
         this.users = users;
     }
-
-    public FakeUserRepository() {
+    public InMemoryUserRepository() {
         this.users = new ArrayList<>();
     }
 
@@ -28,6 +26,6 @@ public class FakeUserRepository implements UserRepository {
 
     @Override
     public void save(User user) {
-
+        users.add(user);
     }
 }

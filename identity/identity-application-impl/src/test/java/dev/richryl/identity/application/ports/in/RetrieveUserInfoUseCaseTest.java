@@ -18,6 +18,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
 
 public class RetrieveUserInfoUseCaseTest {
 
@@ -65,9 +66,8 @@ public class RetrieveUserInfoUseCaseTest {
     void shouldLogMessageWhenUserNotFound() {
         try {
             retrieveUserInfoUseCase.handle("non-existing-external-id");
-        } catch (UserNotFoundException e) {}
-        Mockito.verify(loggerPort, Mockito.times(1)).error(Mockito.anyString());
-       // verify the string parameter contains id
-
+        } catch (UserNotFoundException ignored) {}
+        verify(loggerPort, Mockito.times(1)).error(Mockito.anyString());
+        verify(loggerPort).error(Mockito.contains("non-existing-external-id"));
     }
 }

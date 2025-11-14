@@ -10,6 +10,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/bootstrap-spring" />
+            <option value="$PROJECT_DIR$/common-adapters" />
             <option value="$PROJECT_DIR$/e2e" />
             <option value="$PROJECT_DIR$/identity" />
             <option value="$PROJECT_DIR$/identity/identity-adapters" />

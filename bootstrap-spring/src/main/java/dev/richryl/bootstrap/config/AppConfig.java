@@ -1,5 +1,11 @@
 package dev.richryl.bootstrap.config;
 
+import dev.richryl.common.adapters.Slf4jLoggerAdapter;
+import dev.richryl.identity.adapters.persistence.InMemoryUserRepository;
+import dev.richryl.identity.application.ports.in.RetrieveUserInfoInteractor;
+import dev.richryl.identity.application.ports.in.RetrieveUserInfoUseCase;
+import dev.richryl.identity.application.ports.out.LoggerPort;
+import dev.richryl.identity.application.ports.out.UserRepository;
 import dev.richryl.shortlink.adapters.persistence.InMemoryShortlinkRepository;
 import dev.richryl.shortlink.adapters.services.Base62SlugGenerator;
 import dev.richryl.shortlink.adapters.services.UuidIdGenerator;
@@ -9,6 +15,7 @@ import dev.richryl.shortlink.application.ports.out.ShortlinkRepository;
 import dev.richryl.shortlink.application.ports.out.SlugGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 
 @Configuration
 public class AppConfig {
@@ -51,5 +58,23 @@ public class AppConfig {
     @Bean
     public ResolveShortlinkUseCase resolveShortlinkUseCase(ShortlinkRepository shortlinkRepository) {
         return new ResolveShortlinkInteractor(shortlinkRepository);
+    }
+
+    @Bean
+    public LoggerPort loggerPort() {
+        return new Slf4jLoggerAdapter();
+    }
+
+    @Bean
+    public UserRepository userRepository() {
+        return new InMemoryUserRepository();
+    }
+
+    @Bean
+    public RetrieveUserInfoUseCase retrieveUserInfoUseCase(UserRepository userRepository, LoggerPort loggerPort) {
+        return new RetrieveUserInfoInteractor(
+                userRepository,
+                loggerPort
+        );
     }
 }

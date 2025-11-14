@@ -4,6 +4,7 @@ import dev.richryl.identity.application.exceptions.UserNotFoundException;
 import dev.richryl.identity.application.ports.dto.UserInfoResponse;
 import dev.richryl.identity.application.ports.out.LoggerPort;
 import dev.richryl.identity.application.ports.out.UserRepository;
+import dev.richryl.identity.domain.User;
 
 public class RetrieveUserInfoInteractor implements  RetrieveUserInfoUseCase {
 
@@ -17,12 +18,12 @@ public class RetrieveUserInfoInteractor implements  RetrieveUserInfoUseCase {
 
     @Override
     public UserInfoResponse handle(String externalId) {
-
-        return userRepository.findByExternalId(externalId).orElseThrow(
+        User user = userRepository.findByExternalId(externalId).orElseThrow(
                 () -> {
                     loggerPort.error("User not found with externalId: " + externalId);
                     return new UserNotFoundException("User not found with externalId: " + externalId);
                 }
         );
+        return UserInfoResponse.fromDomain(user);
     }
 }
