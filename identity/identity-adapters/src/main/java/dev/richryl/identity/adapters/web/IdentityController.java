@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("api/identity")
+@RequestMapping("/api/identity")
 public class IdentityController {
 
     private final RetrieveUserInfoUseCase retrieveUserInfoUseCase;

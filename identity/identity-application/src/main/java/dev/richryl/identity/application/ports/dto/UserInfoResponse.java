@@ -5,9 +5,10 @@ import dev.richryl.identity.domain.User;
 import java.util.UUID;
 
 public record UserInfoResponse(
-        UUID id
+        UUID id,
+        String externalId
 ) {
     public static UserInfoResponse fromDomain(User user) {
-        return new UserInfoResponse(user.getId());
+        return new UserInfoResponse(user.getId(), user.getExternalId());
     }
 }

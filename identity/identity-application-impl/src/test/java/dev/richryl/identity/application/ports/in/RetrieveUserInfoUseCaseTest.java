@@ -29,7 +29,7 @@ public class RetrieveUserInfoUseCaseTest {
     @BeforeEach
     void setup() {
         UserRepository userRepository = new FakeUserRepository(
-                new ArrayList<User>(
+                new ArrayList<>(
                         List.of(
                                 new User(firtstUserId, "external-id-1"),
                                 new User(UUID.randomUUID(),"external-id-2")
@@ -56,9 +56,9 @@ public class RetrieveUserInfoUseCaseTest {
     @Test
     @DisplayName("Should throw UserNotFound if user with given external ID does not exist")
     void shouldThrowUserNotFoundIfUserDoesNotExist() {
-        assertThrows(UserNotFoundException.class, () -> {
-            retrieveUserInfoUseCase.handle("non-existing-external-id");
-        });
+        assertThrows(UserNotFoundException.class, () ->
+            retrieveUserInfoUseCase.handle("non-existing-external-id")
+        );
     }
 
     @Test

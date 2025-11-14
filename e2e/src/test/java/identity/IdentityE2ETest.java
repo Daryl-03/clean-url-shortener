@@ -15,8 +15,6 @@ import utils.AppConstants;
 
 import java.util.Map;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-
 @SpringBootTest(
         classes = ShortlinkApp.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
@@ -113,7 +111,7 @@ public class IdentityE2ETest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.userId").isEqualTo("123e4567-e89b-12d3-a456-426614174000");
+                .jsonPath("$.externalId").isEqualTo("1234567890");
     }
 
 }

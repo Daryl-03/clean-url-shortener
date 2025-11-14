@@ -1,6 +1,6 @@
 package dev.richryl.identity.application.ports.mocks;
 
-import dev.richryl.identity.application.ports.dto.UserInfoResponse;
+
 import dev.richryl.identity.application.ports.out.UserRepository;
 import dev.richryl.identity.domain.User;
 
@@ -28,6 +28,6 @@ public class FakeUserRepository implements UserRepository {
 
     @Override
     public void save(User user) {
-
+        users.add(user);
     }
 }

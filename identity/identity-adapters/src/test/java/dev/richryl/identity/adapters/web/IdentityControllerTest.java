@@ -19,7 +19,7 @@ import java.util.UUID;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(
@@ -41,7 +41,8 @@ public class IdentityControllerTest {
         String externalId = "user-123";
         when(retrieveUserInfoUseCase.handle(externalId))
                 .thenReturn(new UserInfoResponse(
-                        UUID.randomUUID()
+                        UUID.randomUUID(),
+                        "user-123"
                         ));
 
         mockMvc.perform(get("/api/identity/me"))

@@ -1,4 +1,4 @@
-package dev.richryl.common.adapters;
+package dev.richryl.common.adapters.services;
 
 import dev.richryl.identity.application.ports.out.LoggerPort;
 
