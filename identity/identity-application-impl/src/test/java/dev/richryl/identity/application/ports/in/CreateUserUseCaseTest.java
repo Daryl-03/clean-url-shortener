@@ -1,5 +1,6 @@
 package dev.richryl.identity.application.ports.in;
 
+import dev.richryl.identity.application.ports.dto.UserInfoResponse;
 import dev.richryl.identity.application.ports.mocks.FakeUserRepository;
 import dev.richryl.identity.application.ports.out.UserIdGenerator;
 import dev.richryl.identity.application.ports.out.UserRepository;
@@ -28,7 +29,9 @@ public class CreateUserUseCaseTest {
     @Test
     @DisplayName("Should create a new user with the given external ID")
     void shouldCreateNewUserWithGivenExternalId() {
-        createUserUseCase.handle("new-external-id");
+        UserInfoResponse created = createUserUseCase.handle("new-external-id");
+        assertNotNull(created);
+        assertEquals("new-external-id", created.externalId());
         User user = userRepository.findByExternalId("new-external-id").orElseThrow();
         assertNotNull(user);
         assertEquals("new-external-id", user.getExternalId());
