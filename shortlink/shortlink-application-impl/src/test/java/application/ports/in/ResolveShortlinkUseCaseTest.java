@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,10 +23,10 @@ public class ResolveShortlinkUseCaseTest {
     @BeforeEach
     void setUp() {
         shortlinkRepository.save(
-                new Shortlink(UUID.randomUUID(), "http://example.com", "exmpl", UUID.randomUUID())
+                new Shortlink(UUID.randomUUID(), "http://example.com", "exmpl", UUID.randomUUID(), LocalDateTime.now(), LocalDateTime.now())
         );
         shortlinkRepository.save(
-                new Shortlink(UUID.randomUUID(), "http://secondexample.com", "exmdel", UUID.randomUUID())
+                new Shortlink(UUID.randomUUID(), "http://secondexample.com", "exmdel", UUID.randomUUID(), LocalDateTime.now(), LocalDateTime.now())
         );
 
     }

@@ -17,6 +17,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -55,7 +56,7 @@ public class ShortlinkControllerTest {
         when(createShortlinkUseCase.handle(anyString(), eq(userId)))
                 .thenAnswer(invocation -> {
                     String url = invocation.getArgument(0);
-                    return new ShortlinkResponse(UUID.randomUUID(), url, "abc123");
+                    return new ShortlinkResponse(UUID.randomUUID(), url, "abc123", LocalDateTime.now(), LocalDateTime.now());
                 });
     }
 
@@ -125,7 +126,7 @@ public class ShortlinkControllerTest {
         UUID id = UUID.randomUUID();
 
         when(getShortlinkByIdUseCase.handle(any(UUID.class))
-        ).thenReturn(new ShortlinkResponse(id, originalUrl, shortcode));
+        ).thenReturn(new ShortlinkResponse(id, originalUrl, shortcode, LocalDateTime.now(), LocalDateTime.now()));
 
         mockMvc.perform(get("/api/shortlinks/{id}", id)
                         .contentType(APPLICATION_JSON)
@@ -166,7 +167,7 @@ public class ShortlinkControllerTest {
                     "url": "%s"
                 }
                 """, id, originalUrl);
-        ShortlinkResponse object = new ShortlinkResponse(id, originalUrl, shortcode);
+        ShortlinkResponse object = new ShortlinkResponse(id, originalUrl, shortcode, LocalDateTime.now(), LocalDateTime.now());
         UpdateShortlinkCommand command = new UpdateShortlinkCommand(id, originalUrl);
 
         when(updateShortlinkByIdUseCase.handle(command)).thenReturn(object);

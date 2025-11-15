@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,7 +28,7 @@ public abstract class ShortlinkRepositoryTest {
     void testSaveAndFindByShortCode() {
         UUID id = UUID.randomUUID();
         UUID ownerId = UUID.randomUUID();
-        Shortlink shortlink = getShortlink(id, ownerId);
+        Shortlink shortlink = saveAndGetShortlink(id, ownerId);
         Shortlink retrievedShortlink = shortlinkRepository.findByShortCode("exmpl").orElse(null);
 
         assertNotNull(retrievedShortlink);
@@ -39,7 +40,7 @@ public abstract class ShortlinkRepositoryTest {
     void saveAndFindById() {
         UUID id = UUID.randomUUID();
         UUID ownerId = UUID.randomUUID();
-        Shortlink shortlink = getShortlink(id, ownerId);
+        Shortlink shortlink = saveAndGetShortlink(id, ownerId);
         Shortlink retrievedShortlink = shortlinkRepository.findById(id).orElse(null);
         assertNotNull(retrievedShortlink);
         assertEquals(retrievedShortlink, shortlink);
@@ -50,27 +51,34 @@ public abstract class ShortlinkRepositoryTest {
     void updateShortlink() {
         UUID id = UUID.randomUUID();
         UUID ownerId = UUID.randomUUID();
-        Shortlink shortlink = getShortlink(id, ownerId);
+        Shortlink shortlink = saveAndGetShortlink(id, ownerId);
 
         Shortlink updatedShortlink = new Shortlink(
                 id,
                 "https://updatedexample.com",
                 "exmpl",
-                shortlink.getOwnerId()
+                shortlink.getOwnerId(),
+                shortlink.getCreatedAt(),
+                shortlink.getUpdatedAt()
         );
         Shortlink result = shortlinkRepository.update(updatedShortlink).orElse(null);
 
         assertNotNull(result);
-        assertEquals("https://updatedexample.com", result.getOriginalUrl());
-        assertEquals("exmpl", result.getShortCode());
+
+        Shortlink verif = shortlinkRepository.findById(id).orElse(null);
+        assertNotNull(verif);
+        assertEquals("https://updatedexample.com", verif.getOriginalUrl());
+        assertEquals("exmpl", verif.getShortCode());
     }
 
-    private Shortlink getShortlink(UUID id, UUID ownerId) {
+    private Shortlink saveAndGetShortlink(UUID id, UUID ownerId) {
         Shortlink shortlink = new Shortlink(
                 id,
                 "https://example.com",
                 "exmpl",
-                ownerId
+                ownerId,
+                LocalDateTime.now(),
+                LocalDateTime.now()
         );
         shortlinkRepository.save(shortlink);
         return shortlink;

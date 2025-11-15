@@ -14,6 +14,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -44,7 +46,8 @@ public class CreateShortlinkUsecaseTest {
         assertNotNull(shortlink);
         assertEquals(validUrl, shortlink.originalUrl());
         assertNotNull(shortlink.shortCode());
-
+        assertEquals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), shortlink.createdAt().truncatedTo(ChronoUnit.MINUTES));
+        assertEquals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), shortlink.updatedAt().truncatedTo(ChronoUnit.MINUTES));
     }
 
     @Test

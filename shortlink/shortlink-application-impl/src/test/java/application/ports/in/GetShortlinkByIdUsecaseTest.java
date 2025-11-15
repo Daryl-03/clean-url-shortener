@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,8 +24,8 @@ public class GetShortlinkByIdUsecaseTest {
     void setup() {
         FakeShortlinkRepository shortlinkRepository = new FakeShortlinkRepository(
                 java.util.List.of(
-                        new Shortlink( firstId,"https://example.com", "abc123", UUID.randomUUID()),
-                        new Shortlink(UUID.randomUUID(),"https://openai.com", "def456", UUID.randomUUID())
+                        new Shortlink( firstId,"https://example.com", "abc123", UUID.randomUUID(), LocalDateTime.now(), LocalDateTime.now()),
+                        new Shortlink(UUID.randomUUID(),"https://openai.com", "def456", UUID.randomUUID(), LocalDateTime.now(), LocalDateTime.now())
                 )
         );
 
