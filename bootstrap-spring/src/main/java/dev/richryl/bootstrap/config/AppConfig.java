@@ -1,18 +1,17 @@
 package dev.richryl.bootstrap.config;
 
 import dev.richryl.common.adapters.services.Slf4jLoggerAdapter;
-import dev.richryl.identity.adapters.filter.EnsureUserProvisioningFilter;
+import dev.richryl.common.adapters.services.UuidIdGenerator;
 import dev.richryl.identity.adapters.persistence.InMemoryUserRepository;
 import dev.richryl.identity.application.ports.in.CreateUserInteractor;
 import dev.richryl.identity.application.ports.in.CreateUserUseCase;
 import dev.richryl.identity.application.ports.in.RetrieveUserInfoInteractor;
 import dev.richryl.identity.application.ports.in.RetrieveUserInfoUseCase;
-import dev.richryl.identity.application.ports.out.UserIdGenerator;
 import dev.richryl.identity.application.ports.out.LoggerPort;
+import dev.richryl.identity.application.ports.out.UserIdGenerator;
 import dev.richryl.identity.application.ports.out.UserRepository;
 import dev.richryl.shortlink.adapters.persistence.InMemoryShortlinkRepository;
 import dev.richryl.shortlink.adapters.services.Base62SlugGenerator;
-import dev.richryl.common.adapters.services.UuidIdGenerator;
 import dev.richryl.shortlink.application.ports.in.*;
 import dev.richryl.shortlink.application.ports.out.ShortlinkIdGenerator;
 import dev.richryl.shortlink.application.ports.out.ShortlinkRepository;
@@ -93,10 +92,5 @@ public class AppConfig {
     @Bean
     public CreateUserUseCase createUserUseCase(UserRepository userRepository, UserIdGenerator userIdGenerator) {
         return new CreateUserInteractor(userRepository, userIdGenerator);
-    }
-
-    @Bean
-    public EnsureUserProvisioningFilter ensureUserProvisioningFilter(CreateUserUseCase createUserUseCase) {
-        return new EnsureUserProvisioningFilter(createUserUseCase);
     }
 }
