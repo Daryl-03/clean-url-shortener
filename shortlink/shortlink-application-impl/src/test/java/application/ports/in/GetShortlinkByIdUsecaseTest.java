@@ -23,8 +23,8 @@ public class GetShortlinkByIdUsecaseTest {
     void setup() {
         FakeShortlinkRepository shortlinkRepository = new FakeShortlinkRepository(
                 java.util.List.of(
-                        new Shortlink( firstId,"https://example.com", "abc123"),
-                        new Shortlink(UUID.randomUUID(),"https://openai.com", "def456")
+                        new Shortlink( firstId,"https://example.com", "abc123", UUID.randomUUID()),
+                        new Shortlink(UUID.randomUUID(),"https://openai.com", "def456", UUID.randomUUID())
                 )
         );
 

@@ -19,7 +19,7 @@ public class UpdateShortlinkByIdInteractor implements UpdateShortlinkByIdUseCase
         Shortlink shortlink = shortlinkRepository.findById(command.id())
                 .orElseThrow(()-> new ShortlinkNotFoundException("Shortlink not found for id: " + command.id()));
 
-        Shortlink updatedShortlink = new Shortlink(command.id(), command.url(), shortlink.getShortCode());
+        Shortlink updatedShortlink = new Shortlink(command.id(), command.url(), shortlink.getShortCode(), shortlink.getOwnerId());
         shortlinkRepository.update(updatedShortlink);
         return ShortlinkResponse.fromDomain(updatedShortlink);
     }

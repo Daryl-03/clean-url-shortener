@@ -20,8 +20,8 @@ public class DeleteShortlinkByIdUsecaseTest {
     private final UUID existingId = UUID.randomUUID();
     private final ShortlinkRepository shortlinkRepository = new FakeShortlinkRepository(
                 new ArrayList<>(List.of(
-                        new Shortlink(existingId, "https://example.com", "abc123"),
-                        new Shortlink(UUID.randomUUID(),"https://openai.com", "def456")
+                        new Shortlink(existingId, "https://example.com", "abc123", UUID.randomUUID()),
+                        new Shortlink(UUID.randomUUID(),"https://openai.com", "def456", UUID.randomUUID())
                 ))
         );
 

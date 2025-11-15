@@ -22,10 +22,10 @@ public class ResolveShortlinkUseCaseTest {
     @BeforeEach
     void setUp() {
         shortlinkRepository.save(
-                new Shortlink(UUID.randomUUID(), "http://example.com", "exmpl")
+                new Shortlink(UUID.randomUUID(), "http://example.com", "exmpl", UUID.randomUUID())
         );
         shortlinkRepository.save(
-                new Shortlink(UUID.randomUUID(), "http://secondexample.com", "exmdel")
+                new Shortlink(UUID.randomUUID(), "http://secondexample.com", "exmdel", UUID.randomUUID())
         );
 
     }

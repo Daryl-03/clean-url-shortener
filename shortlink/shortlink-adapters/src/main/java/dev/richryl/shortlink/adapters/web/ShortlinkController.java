@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.UUID;
 
 @RestController
@@ -30,8 +31,13 @@ public class ShortlinkController {
     }
 
     @PostMapping()
-    public ResponseEntity<ShortlinkResponse> createShortlink(@RequestBody @Valid CreateShortlinkRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(createShortlinkUseCase.handle(request.url()));
+    public ResponseEntity<ShortlinkResponse> createShortlink(
+            @RequestBody @Valid CreateShortlinkRequest request,
+            Principal principal
+    ) {
+        UUID ownerId = UUID.fromString(principal.getName());
+        System.err.println(principal.getName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(createShortlinkUseCase.handle(request.url(), ownerId));
     }
 
     @GetMapping("/{id}")

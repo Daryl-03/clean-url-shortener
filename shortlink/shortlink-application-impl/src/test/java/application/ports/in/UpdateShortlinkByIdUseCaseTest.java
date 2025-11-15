@@ -24,10 +24,10 @@ public class UpdateShortlinkByIdUseCaseTest {
     @BeforeEach
     void setUp() {
         shortlinkRepository.save(
-            new Shortlink(existingId, "https://example.com", "abc123")
+            new Shortlink(existingId, "https://example.com", "abc123", UUID.randomUUID())
         );
         shortlinkRepository.save(
-            new Shortlink(UUID.randomUUID(), "https://secondexample.com", "abc123567")
+            new Shortlink(UUID.randomUUID(), "https://secondexample.com", "abc123567", UUID.randomUUID())
         );
 
     }
