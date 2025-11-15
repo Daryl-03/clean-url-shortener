@@ -3,10 +3,7 @@ package dev.richryl.shortlink.adapters.web;
 import dev.richryl.shortlink.application.exceptions.ShortlinkNotFoundException;
 import dev.richryl.shortlink.application.ports.dto.ShortlinkResponse;
 import dev.richryl.shortlink.application.ports.dto.UpdateShortlinkCommand;
-import dev.richryl.shortlink.application.ports.in.CreateShortlinkUseCase;
-import dev.richryl.shortlink.application.ports.in.DeleteShortlinkByIdUseCase;
-import dev.richryl.shortlink.application.ports.in.GetShortlinkByIdUseCase;
-import dev.richryl.shortlink.application.ports.in.UpdateShortlinkByIdUseCase;
+import dev.richryl.shortlink.application.ports.in.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,6 +44,8 @@ public class ShortlinkControllerTest {
     private DeleteShortlinkByIdUseCase deleteShortlinkByIdUseCase;
     @MockitoBean
     private UpdateShortlinkByIdUseCase updateShortlinkByIdUseCase;
+    @MockitoBean
+    private RetrieveAllShortlinksForUserUseCase retrieveAllShortlinksForUserUseCase;
 
     private final UUID userId = UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479");
 
@@ -209,5 +208,26 @@ public class ShortlinkControllerTest {
                 .andExpect(jsonPath("$.status").exists());
     }
 
+    @Test
+    @DisplayName("should return a list of shortlinks for the authenticated user")
+    void  shouldReturnListOfShortlinksForAuthenticatedUser() throws Exception {
+        UUID shortlinkId1 = UUID.randomUUID();
+        UUID shortlinkId2 = UUID.randomUUID();
 
+        when(retrieveAllShortlinksForUserUseCase.handle(userId))
+                .thenReturn(java.util.List.of(
+                        new ShortlinkResponse(shortlinkId1, "https://example1.com", "code1", LocalDateTime.now(), LocalDateTime.now()),
+                        new ShortlinkResponse(shortlinkId2, "https://example2.com", "code2", LocalDateTime.now(), LocalDateTime.now())
+                ));
+
+        mockMvc.perform(get("/api/shortlinks")
+                        .contentType(APPLICATION_JSON)
+                        .with(csrf())
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].id").value(shortlinkId1.toString()))
+                .andExpect(jsonPath("$.[1].id").value(shortlinkId2.toString()));
+
+        verify(retrieveAllShortlinksForUserUseCase, times(1)).handle(userId);
+    }
 }

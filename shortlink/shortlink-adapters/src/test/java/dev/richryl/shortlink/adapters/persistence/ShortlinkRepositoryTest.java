@@ -84,4 +84,17 @@ public abstract class ShortlinkRepositoryTest {
         return shortlink;
     }
 
+    @Test
+    @DisplayName("Should find shortlink by owner id")
+    void saveAndFindByOwnerId() {
+        UUID id = UUID.randomUUID();
+        UUID ownerId = UUID.randomUUID();
+        Shortlink shortlink = saveAndGetShortlink(id, ownerId);
+
+        var shortlinks = shortlinkRepository.findAllByOwnerId(ownerId);
+        assertNotNull(shortlinks);
+        assertEquals(1, shortlinks.size());
+        assertEquals(shortlink.getId(), shortlinks.getFirst().id());
+    }
+
 }

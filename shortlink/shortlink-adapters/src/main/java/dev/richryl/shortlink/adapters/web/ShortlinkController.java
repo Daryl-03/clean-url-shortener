@@ -3,16 +3,14 @@ package dev.richryl.shortlink.adapters.web;
 import dev.richryl.shortlink.adapters.web.dto.CreateShortlinkRequest;
 import dev.richryl.shortlink.adapters.web.dto.UpdateShortlinkRequest;
 import dev.richryl.shortlink.application.ports.dto.ShortlinkResponse;
-import dev.richryl.shortlink.application.ports.in.CreateShortlinkUseCase;
-import dev.richryl.shortlink.application.ports.in.DeleteShortlinkByIdUseCase;
-import dev.richryl.shortlink.application.ports.in.GetShortlinkByIdUseCase;
-import dev.richryl.shortlink.application.ports.in.UpdateShortlinkByIdUseCase;
+import dev.richryl.shortlink.application.ports.in.*;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -22,12 +20,14 @@ public class ShortlinkController {
     private final GetShortlinkByIdUseCase getShortlinkByIdUseCase;
     private final DeleteShortlinkByIdUseCase deleteShortlinkByIdUseCase;
     private final UpdateShortlinkByIdUseCase updateShortlinkByIdUseCase;
+    private final RetrieveAllShortlinksForUserUseCase retrieveAllShortlinksForUserUseCase;
 
-    public ShortlinkController(CreateShortlinkUseCase createShortlinkUseCase, GetShortlinkByIdUseCase getShortlinkByIdUseCase, DeleteShortlinkByIdUseCase deleteShortlinkByIdUseCase, UpdateShortlinkByIdUseCase updateShortlinkByIdUseCase) {
+    public ShortlinkController(CreateShortlinkUseCase createShortlinkUseCase, GetShortlinkByIdUseCase getShortlinkByIdUseCase, DeleteShortlinkByIdUseCase deleteShortlinkByIdUseCase, UpdateShortlinkByIdUseCase updateShortlinkByIdUseCase, RetrieveAllShortlinksForUserUseCase retrieveAllShortlinksForUserUseCase) {
         this.createShortlinkUseCase = createShortlinkUseCase;
         this.getShortlinkByIdUseCase = getShortlinkByIdUseCase;
         this.deleteShortlinkByIdUseCase = deleteShortlinkByIdUseCase;
         this.updateShortlinkByIdUseCase = updateShortlinkByIdUseCase;
+        this.retrieveAllShortlinksForUserUseCase = retrieveAllShortlinksForUserUseCase;
     }
 
     @PostMapping()
@@ -56,4 +56,11 @@ public class ShortlinkController {
         return ResponseEntity.status(HttpStatus.OK).body(updateShortlinkByIdUseCase.handle(request.toCommand()));
     }
 
+    @GetMapping
+    public ResponseEntity<List<ShortlinkResponse>> getShortlinks(
+            Principal principal
+    ) {
+        UUID ownerId = UUID.fromString(principal.getName());
+        return ResponseEntity.status(HttpStatus.OK).body(retrieveAllShortlinksForUserUseCase.handle(ownerId));
+    }
 }

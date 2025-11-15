@@ -266,4 +266,31 @@ public class ShortlinkE2ETest {
                 .expectStatus().is3xxRedirection()
                 .expectHeader().valueEquals("Location", DEFAULT_URL);
     }
+
+    @Test
+    @DisplayName("should return a list of shortlinks for the authenticated user")
+    void shouldReturnListOfShortlinksForAuthenticatedUser() {
+        String requestBody1 = """
+                {
+                    "url": "https://example.com/first/path"
+                }
+                """;
+
+        String requestBody2 = """
+                {
+                    "url": "https://example.com/second/path"
+                }
+                """;
+
+        createShortlinkRequest(requestBody1);
+        createShortlinkRequest(requestBody2);
+
+        webTestClient.get()
+                .uri("/api/shortlinks")
+                .header("Authorization", "Bearer " + TOKEN)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.length()").isEqualTo(2);
+    }
 }

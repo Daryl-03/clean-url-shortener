@@ -93,4 +93,9 @@ public class AppConfig {
     public CreateUserUseCase createUserUseCase(UserRepository userRepository, UserIdGenerator userIdGenerator) {
         return new CreateUserInteractor(userRepository, userIdGenerator);
     }
+
+    @Bean
+    public RetrieveAllShortlinksForUserUseCase retrieveAllShortlinksForUserUseCase(ShortlinkRepository shortlinkRepository) {
+        return new RetrieveAllShortlinksForUserInteractor(shortlinkRepository);
+    }
 }
