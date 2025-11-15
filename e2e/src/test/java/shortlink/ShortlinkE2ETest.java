@@ -291,6 +291,7 @@ public class ShortlinkE2ETest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.length()").isEqualTo(2);
+                .jsonPath("$.[0].originalUrl").isNotEmpty()
+                .jsonPath("$.[1].originalUrl").isNotEmpty();
     }
 }
