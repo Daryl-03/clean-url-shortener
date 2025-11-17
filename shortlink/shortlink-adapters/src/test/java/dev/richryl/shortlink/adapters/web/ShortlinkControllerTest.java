@@ -14,7 +14,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -55,7 +55,7 @@ public class ShortlinkControllerTest {
         when(createShortlinkUseCase.handle(anyString(), eq(userId)))
                 .thenAnswer(invocation -> {
                     String url = invocation.getArgument(0);
-                    return new ShortlinkResponse(UUID.randomUUID(), url, "abc123", LocalDateTime.now(), LocalDateTime.now());
+                    return new ShortlinkResponse(UUID.randomUUID(), url, "abc123", Instant.now(), Instant.now());
                 });
     }
 
@@ -125,7 +125,7 @@ public class ShortlinkControllerTest {
         UUID id = UUID.randomUUID();
 
         when(getShortlinkByIdUseCase.handle(any(UUID.class))
-        ).thenReturn(new ShortlinkResponse(id, originalUrl, shortcode, LocalDateTime.now(), LocalDateTime.now()));
+        ).thenReturn(new ShortlinkResponse(id, originalUrl, shortcode, Instant.now(), Instant.now()));
 
         mockMvc.perform(get("/api/shortlinks/{id}", id)
                         .contentType(APPLICATION_JSON)
@@ -166,7 +166,7 @@ public class ShortlinkControllerTest {
                     "url": "%s"
                 }
                 """, id, originalUrl);
-        ShortlinkResponse object = new ShortlinkResponse(id, originalUrl, shortcode, LocalDateTime.now(), LocalDateTime.now());
+        ShortlinkResponse object = new ShortlinkResponse(id, originalUrl, shortcode, Instant.now(), Instant.now());
         UpdateShortlinkCommand command = new UpdateShortlinkCommand(id, originalUrl);
 
         when(updateShortlinkByIdUseCase.handle(command)).thenReturn(object);
@@ -216,8 +216,8 @@ public class ShortlinkControllerTest {
 
         when(retrieveAllShortlinksForUserUseCase.handle(userId))
                 .thenReturn(java.util.List.of(
-                        new ShortlinkResponse(shortlinkId1, "https://example1.com", "code1", LocalDateTime.now(), LocalDateTime.now()),
-                        new ShortlinkResponse(shortlinkId2, "https://example2.com", "code2", LocalDateTime.now(), LocalDateTime.now())
+                        new ShortlinkResponse(shortlinkId1, "https://example1.com", "code1", Instant.now(), Instant.now()),
+                        new ShortlinkResponse(shortlinkId2, "https://example2.com", "code2", Instant.now(), Instant.now())
                 ));
 
         mockMvc.perform(get("/api/shortlinks")
