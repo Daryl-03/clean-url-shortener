@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class FakeClickEventRepository implements ClickEventRepository {
-    private List<ClickEvent> clickEvents;
+    private final List<ClickEvent> clickEvents;
 
     public FakeClickEventRepository(List<ClickEvent> clickEvents) {
         this.clickEvents = clickEvents;
