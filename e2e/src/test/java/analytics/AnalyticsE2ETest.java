@@ -9,6 +9,8 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import utils.AppConstants;
 import utils.HelperMethod;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 @SpringBootTest(
         classes = ShortlinkApp.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
@@ -32,6 +34,7 @@ public class AnalyticsE2ETest {
         // Create a shortlink first
 
         HelperMethod.ResponseData createResponse = HelperMethod.createShortlinkRequest(requestBody, webTestClient);
+        assertNotNull(createResponse.data().getResponseBody());
         String id = (String) createResponse.data().getResponseBody().get("id");
         String shortCode = (String) createResponse.data().getResponseBody().get("shortCode");
 

@@ -4,9 +4,9 @@ import java.time.Instant;
 import java.util.UUID;
 
 public class ClickEvent {
-    private UUID id;
-    private Instant timestamp;
-    private UUID shortlinkId;
+    private final UUID id;
+    private final Instant timestamp;
+    private final UUID shortlinkId;
 
     public ClickEvent(UUID uuid, Instant now, UUID firstShortlinkId) {
         this.id = uuid;
