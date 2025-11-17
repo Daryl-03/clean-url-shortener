@@ -1,6 +1,6 @@
 package dev.richryl.shortlink;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 public class Shortlink {
@@ -8,10 +8,10 @@ public class Shortlink {
     private final String originalUrl;
     private final String shortCode;
     private final UUID ownerId;
-    private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
+    private final Instant createdAt;
+    private final Instant updatedAt;
 
-    public Shortlink(UUID id, String originalUrl, String shortCode, UUID ownerId, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Shortlink(UUID id, String originalUrl, String shortCode, UUID ownerId, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.originalUrl = originalUrl;
         this.shortCode = shortCode;
@@ -36,11 +36,11 @@ public class Shortlink {
         return ownerId;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
+    public Instant getUpdatedAt() {
         return updatedAt;
     }
 }

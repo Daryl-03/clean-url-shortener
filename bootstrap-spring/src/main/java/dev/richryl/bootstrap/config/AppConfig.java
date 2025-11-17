@@ -1,18 +1,18 @@
 package dev.richryl.bootstrap.config;
 
+import dev.richryl.analytics.adapters.persistence.InMemoryClickEventRepository;
+import dev.richryl.analytics.adapters.services.AnalyticsAdapter;
+import dev.richryl.analytics.application.ports.in.CreateClickEventInteractor;
+import dev.richryl.analytics.application.ports.in.RetrieveClickEventsInteractor;
 import dev.richryl.common.adapters.services.Slf4jLoggerAdapter;
 import dev.richryl.common.adapters.services.UuidIdGenerator;
 import dev.richryl.identity.adapters.persistence.InMemoryUserRepository;
-import dev.richryl.identity.application.ports.in.CreateUserInteractor;
-import dev.richryl.identity.application.ports.in.CreateUserUseCase;
-import dev.richryl.identity.application.ports.in.RetrieveUserInfoInteractor;
-import dev.richryl.identity.application.ports.in.RetrieveUserInfoUseCase;
-import dev.richryl.identity.application.ports.out.LoggerPort;
-import dev.richryl.identity.application.ports.out.UserIdGenerator;
-import dev.richryl.identity.application.ports.out.UserRepository;
+import dev.richryl.identity.application.ports.in.*;
+import dev.richryl.identity.application.ports.out.*;
 import dev.richryl.shortlink.adapters.persistence.InMemoryShortlinkRepository;
 import dev.richryl.shortlink.adapters.services.Base62SlugGenerator;
 import dev.richryl.shortlink.application.ports.in.*;
+import dev.richryl.shortlink.application.ports.out.AnalyticsPort;
 import dev.richryl.shortlink.application.ports.out.ShortlinkIdGenerator;
 import dev.richryl.shortlink.application.ports.out.ShortlinkRepository;
 import dev.richryl.shortlink.application.ports.out.SlugGenerator;
@@ -32,6 +32,16 @@ public class AppConfig {
     @Bean
     @Primary
     public ShortlinkIdGenerator shortlinkIdGenerator() {
+        return new UuidIdGenerator();
+    }
+
+    @Bean
+    public UserIdGenerator idGenerator() {
+        return new UuidIdGenerator();
+    }
+
+    @Bean
+    public ClickEventIdGenerator clickEventIdGenerator() {
         return new UuidIdGenerator();
     }
 
@@ -61,8 +71,13 @@ public class AppConfig {
     }
 
     @Bean
-    public ResolveShortlinkUseCase resolveShortlinkUseCase(ShortlinkRepository shortlinkRepository) {
-        return new ResolveShortlinkInteractor(shortlinkRepository);
+    public AnalyticsPort analyticsPort(CreateClickEventUseCase createClickEventUseCase) {
+        return new AnalyticsAdapter(createClickEventUseCase);
+    }
+
+    @Bean
+    public ResolveShortlinkUseCase resolveShortlinkUseCase(ShortlinkRepository shortlinkRepository, AnalyticsPort analyticsPort) {
+        return new ResolveShortlinkInteractor(shortlinkRepository, analyticsPort);
     }
 
     @Bean
@@ -83,11 +98,6 @@ public class AppConfig {
         );
     }
 
-    @Bean
-    public UserIdGenerator idGenerator() {
-        return new UuidIdGenerator();
-    }
-
 
     @Bean
     public CreateUserUseCase createUserUseCase(UserRepository userRepository, UserIdGenerator userIdGenerator) {
@@ -97,5 +107,20 @@ public class AppConfig {
     @Bean
     public RetrieveAllShortlinksForUserUseCase retrieveAllShortlinksForUserUseCase(ShortlinkRepository shortlinkRepository) {
         return new RetrieveAllShortlinksForUserInteractor(shortlinkRepository);
+    }
+
+    @Bean
+    public ClickEventRepository clickEventRepository() {
+        return new InMemoryClickEventRepository();
+    }
+
+    @Bean
+    public RetrieveClickEventsUseCase retrieveClickEventsUseCase(ClickEventRepository clickEventRepository) {
+        return new RetrieveClickEventsInteractor(clickEventRepository);
+    }
+
+    @Bean
+    public CreateClickEventUseCase createClickEventUseCase(ClickEventRepository clickEventRepository, ClickEventIdGenerator clickEventIdGenerator) {
+        return new CreateClickEventInteractor(clickEventRepository, clickEventIdGenerator);
     }
 }

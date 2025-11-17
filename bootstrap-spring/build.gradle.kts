@@ -24,6 +24,10 @@ dependencies {
     implementation(project(":identity:identity-application-impl"))
     implementation(project(":identity:identity-adapters"))
 
+    implementation(project(":analytics:analytics-application"))
+    implementation(project(":analytics:analytics-application-impl"))
+    implementation(project(":analytics:analytics-adapters"))
+
     implementation(project(":common-adapters"))
 
     implementation("org.springframework.security:spring-security-oauth2-jose:7.0.0-RC3")

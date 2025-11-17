@@ -5,16 +5,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import utils.AppConstants;
+import utils.HelperMethod;
 
-import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static utils.HelperMethod.createShortlinkRequest;
 
 @SpringBootTest(
         classes = ShortlinkApp.class,
@@ -27,23 +26,6 @@ public class ShortlinkE2ETest {
 
     @Autowired
     private WebTestClient webTestClient;
-
-    private record ResponseData(EntityExchangeResult<Map<String, Object>> data) {
-    }
-
-    private ResponseData createShortlinkRequest(String requestBody) {
-        EntityExchangeResult<Map<String, Object>> data = webTestClient.post()
-                .uri("/api/shortlinks")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer " + TOKEN)
-                .bodyValue(requestBody)
-                .exchange()
-                .expectStatus().isCreated()
-                .expectBody(new ParameterizedTypeReference<Map<String, Object>>() {
-                }) // Deserialize the JSON into a Map
-                .returnResult();
-        return new ResponseData(data);
-    }
 
     private WebTestClient.BodyContentSpec expectApiError(WebTestClient.BodyContentSpec body) {
         return body
@@ -102,7 +84,7 @@ public class ShortlinkE2ETest {
                      "url": "%s"
                 }
                 """.formatted(DEFAULT_URL);
-        ResponseData result = createShortlinkRequest(requestBody);
+        HelperMethod.ResponseData result = createShortlinkRequest(requestBody, webTestClient);
 
         assertNotNull(result.data().getResponseBody());
 
@@ -130,7 +112,7 @@ public class ShortlinkE2ETest {
                 }
                 """;
 
-        ResponseData result = createShortlinkRequest(requestBody);
+        HelperMethod.ResponseData result = createShortlinkRequest(requestBody, webTestClient);
 
         assertNotNull(result.data().getResponseBody());
 
@@ -222,7 +204,7 @@ public class ShortlinkE2ETest {
                 }
                 """;
 
-        ResponseData result = createShortlinkRequest(requestBody);
+        HelperMethod.ResponseData result = createShortlinkRequest(requestBody, webTestClient);
 
         assertNotNull(result.data().getResponseBody());
 
@@ -252,7 +234,7 @@ public class ShortlinkE2ETest {
                 }
                 """;
 
-        ResponseData result = createShortlinkRequest(requestBody);
+        HelperMethod.ResponseData result = createShortlinkRequest(requestBody, webTestClient);
 
         assertNotNull(result.data().getResponseBody());
 
@@ -282,8 +264,8 @@ public class ShortlinkE2ETest {
                 }
                 """;
 
-        createShortlinkRequest(requestBody1);
-        createShortlinkRequest(requestBody2);
+        createShortlinkRequest(requestBody1, webTestClient);
+        createShortlinkRequest(requestBody2, webTestClient);
 
         webTestClient.get()
                 .uri("/api/shortlinks")

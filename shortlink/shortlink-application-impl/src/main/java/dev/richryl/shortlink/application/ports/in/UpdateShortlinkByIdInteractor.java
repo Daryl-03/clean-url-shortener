@@ -6,7 +6,7 @@ import dev.richryl.shortlink.application.ports.dto.ShortlinkResponse;
 import dev.richryl.shortlink.application.ports.dto.UpdateShortlinkCommand;
 import dev.richryl.shortlink.application.ports.out.ShortlinkRepository;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public class UpdateShortlinkByIdInteractor implements UpdateShortlinkByIdUseCase {
     private final ShortlinkRepository shortlinkRepository;
@@ -21,7 +21,7 @@ public class UpdateShortlinkByIdInteractor implements UpdateShortlinkByIdUseCase
         Shortlink shortlink = shortlinkRepository.findById(command.id())
                 .orElseThrow(() -> new ShortlinkNotFoundException("Shortlink not found for id: " + command.id()));
 
-        Shortlink updatedShortlink = new Shortlink(command.id(), command.url(), shortlink.getShortCode(), shortlink.getOwnerId(), shortlink.getCreatedAt(), LocalDateTime.now());
+        Shortlink updatedShortlink = new Shortlink(command.id(), command.url(), shortlink.getShortCode(), shortlink.getOwnerId(), shortlink.getCreatedAt(), Instant.now());
         shortlinkRepository.update(updatedShortlink);
         return ShortlinkResponse.fromDomain(updatedShortlink);
     }

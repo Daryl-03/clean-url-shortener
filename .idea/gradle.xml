@@ -9,6 +9,11 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/analytics" />
+            <option value="$PROJECT_DIR$/analytics/analytics-adapters" />
+            <option value="$PROJECT_DIR$/analytics/analytics-application" />
+            <option value="$PROJECT_DIR$/analytics/analytics-application-impl" />
+            <option value="$PROJECT_DIR$/analytics/analytics-domain" />
             <option value="$PROJECT_DIR$/bootstrap-spring" />
             <option value="$PROJECT_DIR$/common-adapters" />
             <option value="$PROJECT_DIR$/e2e" />

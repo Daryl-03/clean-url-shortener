@@ -6,7 +6,7 @@ import dev.richryl.shortlink.application.ports.out.ShortlinkIdGenerator;
 import dev.richryl.shortlink.application.ports.out.ShortlinkRepository;
 import dev.richryl.shortlink.application.ports.out.SlugGenerator;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 public class CreateShortlinkInteractor implements CreateShortlinkUseCase {
@@ -21,7 +21,7 @@ public class CreateShortlinkInteractor implements CreateShortlinkUseCase {
     }
 
     public ShortlinkResponse handle(String url, UUID ownerId) {
-        Shortlink shortlink = new Shortlink(shortlinkIdGenerator.generate(), url, slugGenerator.generate(url), ownerId, LocalDateTime.now(), LocalDateTime.now());
+        Shortlink shortlink = new Shortlink(shortlinkIdGenerator.generate(), url, slugGenerator.generate(url), ownerId, Instant.now(), Instant.now());
         shortlinkRepository.save(shortlink);
         return ShortlinkResponse.fromDomain(shortlink);
     }

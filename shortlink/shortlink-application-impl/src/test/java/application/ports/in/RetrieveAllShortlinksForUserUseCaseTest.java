@@ -8,7 +8,7 @@ import dev.richryl.shortlink.application.ports.out.ShortlinkRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -24,9 +24,9 @@ public class RetrieveAllShortlinksForUserUseCaseTest {
         ShortlinkRepository shortlinkRepository = new FakeShortlinkRepository(
                 new ArrayList<>(
                         List.of(
-                                new Shortlink(UUID.randomUUID(), "http://example.com", "exmpl", userId, LocalDateTime.now(), LocalDateTime.now()),
-                                new Shortlink(UUID.randomUUID(), "http://secondexample.com", "exmdel", userId, LocalDateTime.now(), LocalDateTime.now()),
-                                new Shortlink(UUID.randomUUID(), "http://otheruser.com", "othusr", UUID.randomUUID(), LocalDateTime.now(), LocalDateTime.now()
+                                new Shortlink(UUID.randomUUID(), "http://example.com", "exmpl", userId, Instant.now(), Instant.now()),
+                                new Shortlink(UUID.randomUUID(), "http://secondexample.com", "exmdel", userId, Instant.now(), Instant.now()),
+                                new Shortlink(UUID.randomUUID(), "http://otheruser.com", "othusr", UUID.randomUUID(), Instant.now(), Instant.now()
                                 )
                         )
                 ));

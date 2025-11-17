@@ -12,7 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
@@ -25,7 +25,7 @@ public class UpdateShortlinkByIdUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        LocalDateTime added = LocalDateTime.now().minusDays(1);
+        Instant added = Instant.now().minusSeconds(3600 * 24); // 1 day ago
         shortlinkRepository.save(
             new Shortlink(existingId, "https://example.com", "abc123", UUID.randomUUID(), added, added)
         );

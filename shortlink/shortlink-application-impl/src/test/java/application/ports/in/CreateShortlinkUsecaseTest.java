@@ -13,12 +13,12 @@ import dev.richryl.shortlink.application.ports.out.SlugGenerator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class CreateShortlinkUsecaseTest {
     private final SlugGenerator slugGenerator = new FakeSlugGenerator();
@@ -46,8 +46,8 @@ public class CreateShortlinkUsecaseTest {
         assertNotNull(shortlink);
         assertEquals(validUrl, shortlink.originalUrl());
         assertNotNull(shortlink.shortCode());
-        assertEquals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), shortlink.createdAt().truncatedTo(ChronoUnit.MINUTES));
-        assertEquals(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), shortlink.updatedAt().truncatedTo(ChronoUnit.MINUTES));
+        assertEquals(Instant.now().truncatedTo(ChronoUnit.MINUTES), shortlink.createdAt().truncatedTo(ChronoUnit.MINUTES));
+        assertEquals(Instant.now().truncatedTo(ChronoUnit.MINUTES), shortlink.updatedAt().truncatedTo(ChronoUnit.MINUTES));
     }
 
     @Test
