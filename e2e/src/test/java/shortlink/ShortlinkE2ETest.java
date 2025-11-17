@@ -5,16 +5,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import utils.AppConstants;
+import utils.HelperMethod;
 
-import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static utils.HelperMethod.createShortlinkRequest;
 
 @SpringBootTest(
         classes = ShortlinkApp.class,
@@ -23,25 +22,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class ShortlinkE2ETest {
 
     private final String TOKEN = AppConstants.JWT_TOKEN;
+    private final String DEFAULT_URL = "https://example.com/some/long/path";
 
     @Autowired
     private WebTestClient webTestClient;
 
-    private record ResponseData(EntityExchangeResult<Map<String, Object>> data) {
-    }
-
-    private ResponseData createShortlinkRequest(String requestBody) {
-        EntityExchangeResult<Map<String, Object>> data = webTestClient.post()
-                .uri("/api/shortlinks")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer " + TOKEN)
-                .bodyValue(requestBody)
-                .exchange()
-                .expectStatus().isCreated()
-                .expectBody(new ParameterizedTypeReference<Map<String, Object>>() {
-                }) // Deserialize the JSON into a Map
-                .returnResult();
-        return new ResponseData(data);
+    private WebTestClient.BodyContentSpec expectApiError(WebTestClient.BodyContentSpec body) {
+        return body
+                .jsonPath("$.error").exists()
+                .jsonPath("$.code").exists()
+                .jsonPath("$.status").exists();
     }
 
     @Test
@@ -49,21 +39,25 @@ public class ShortlinkE2ETest {
     void returnCreatedShortlinkWithCreatedStatus() {
         String requestBody = """
                 {
-                    "url": "https://example.com/some/long/path"
+                    "url": "%s"
                 }
-                """;
+                """.formatted(DEFAULT_URL);
 
-        webTestClient.post()
-                .uri("/api/shortlinks")
+        getExchangePost("/api/shortlinks", requestBody)
+                .expectStatus().isCreated()
+                .expectBody()
+                .jsonPath("$.originalUrl").isEqualTo(DEFAULT_URL)
+                .jsonPath("$.shortCode").isNotEmpty();
+
+    }
+
+    private WebTestClient.ResponseSpec getExchangePost(String uri, String requestBody) {
+        return webTestClient.post()
+                .uri(uri)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer " + TOKEN)
                 .bodyValue(requestBody)
-                .exchange()
-                .expectStatus().isCreated()
-                .expectBody()
-                .jsonPath("$.originalUrl").isEqualTo("https://example.com/some/long/path")
-                .jsonPath("$.shortCode").isNotEmpty();
-
+                .exchange();
     }
 
     @Test
@@ -75,17 +69,11 @@ public class ShortlinkE2ETest {
                 }
                 """;
 
-        webTestClient.post()
-                .uri("/api/shortlinks")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer " + TOKEN)
-                .bodyValue(requestBody)
-                .exchange()
-                .expectStatus().isBadRequest()
-                .expectBody()
-                .jsonPath("$.error").exists()
-                .jsonPath("$.code").exists()
-                .jsonPath("$.status").exists();
+        expectApiError(
+                getExchangePost("/api/shortlinks", requestBody)
+                        .expectStatus().isBadRequest()
+                        .expectBody()
+        );
     }
 
     @Test
@@ -93,10 +81,10 @@ public class ShortlinkE2ETest {
     void retrievePreviouslyCreatedShortlink() {
         String requestBody = """
                 {
-                     "url": "https://example.com/some/long/path"
+                     "url": "%s"
                 }
-                """;
-        ResponseData result = createShortlinkRequest(requestBody);
+                """.formatted(DEFAULT_URL);
+        HelperMethod.ResponseData result = createShortlinkRequest(requestBody, webTestClient);
 
         assertNotNull(result.data().getResponseBody());
 
@@ -111,7 +99,7 @@ public class ShortlinkE2ETest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.originalUrl").isEqualTo("https://example.com/some/long/path")
+                .jsonPath("$.originalUrl").isEqualTo(DEFAULT_URL)
                 .jsonPath("$.shortCode").isEqualTo(shortCode);
     }
 
@@ -124,7 +112,7 @@ public class ShortlinkE2ETest {
                 }
                 """;
 
-        ResponseData result = createShortlinkRequest(requestBody);
+        HelperMethod.ResponseData result = createShortlinkRequest(requestBody, webTestClient);
 
         assertNotNull(result.data().getResponseBody());
 
@@ -183,30 +171,28 @@ public class ShortlinkE2ETest {
     void returnNotFoundForNonExistingShortlink() {
         UUID nonExistingId = UUID.randomUUID();
 
-        webTestClient.get()
-                .uri("/api/shortlinks/{nonExistingId}", nonExistingId)
-                .header("Authorization", "Bearer " + TOKEN)
-                .exchange()
-                .expectStatus().isNotFound()
-                .expectBody()
-                .jsonPath("$.error").exists()
-                .jsonPath("$.code").exists()
-                .jsonPath("$.status").exists();
+        expectApiError(
+                webTestClient.get()
+                        .uri("/api/shortlinks/{nonExistingId}", nonExistingId)
+                        .header("Authorization", "Bearer " + TOKEN)
+                        .exchange()
+                        .expectStatus().isNotFound()
+                        .expectBody()
+        );
     }
 
     @Test
     @DisplayName("When id is invalid format, return 400 Bad Request with adequate error message")
     void returnBadRequestForInvalidIdFormat() {
         String invalidId = "invalid-uuid-format";
-        webTestClient.get()
-                .uri("/api/shortlinks/{id}", invalidId)
-                .header("Authorization", "Bearer " + TOKEN)
-                .exchange()
-                .expectStatus().isBadRequest()
-                .expectBody()
-                .jsonPath("$.error").exists()
-                .jsonPath("$.code").exists()
-                .jsonPath("$.status").exists();
+        expectApiError(
+                webTestClient.get()
+                        .uri("/api/shortlinks/{id}", invalidId)
+                        .header("Authorization", "Bearer " + TOKEN)
+                        .exchange()
+                        .expectStatus().isBadRequest()
+                        .expectBody()
+        );
     }
 
     @Test
@@ -218,7 +204,7 @@ public class ShortlinkE2ETest {
                 }
                 """;
 
-        ResponseData result = createShortlinkRequest(requestBody);
+        HelperMethod.ResponseData result = createShortlinkRequest(requestBody, webTestClient);
 
         assertNotNull(result.data().getResponseBody());
 
@@ -248,7 +234,7 @@ public class ShortlinkE2ETest {
                 }
                 """;
 
-        ResponseData result = createShortlinkRequest(requestBody);
+        HelperMethod.ResponseData result = createShortlinkRequest(requestBody, webTestClient);
 
         assertNotNull(result.data().getResponseBody());
 
@@ -260,6 +246,34 @@ public class ShortlinkE2ETest {
                 .uri("/s/{shortCode}", shortCode)
                 .exchange()
                 .expectStatus().is3xxRedirection()
-                .expectHeader().valueEquals("Location", "https://example.com/some/long/path");
+                .expectHeader().valueEquals("Location", DEFAULT_URL);
+    }
+
+    @Test
+    @DisplayName("should return a list of shortlinks for the authenticated user")
+    void shouldReturnListOfShortlinksForAuthenticatedUser() {
+        String requestBody1 = """
+                {
+                    "url": "https://example.com/first/path"
+                }
+                """;
+
+        String requestBody2 = """
+                {
+                    "url": "https://example.com/second/path"
+                }
+                """;
+
+        createShortlinkRequest(requestBody1, webTestClient);
+        createShortlinkRequest(requestBody2, webTestClient);
+
+        webTestClient.get()
+                .uri("/api/shortlinks")
+                .header("Authorization", "Bearer " + TOKEN)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.[0].originalUrl").isNotEmpty()
+                .jsonPath("$.[1].originalUrl").isNotEmpty();
     }
 }

@@ -18,8 +18,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
 
+    implementation("org.springframework.security:spring-security-oauth2-jose:7.0.0-RC3")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+
     testImplementation("org.springframework.security:spring-security-test")
-    testImplementation(project(":bootstrap-spring"))
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")

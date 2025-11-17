@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -20,8 +21,8 @@ public class DeleteShortlinkByIdUsecaseTest {
     private final UUID existingId = UUID.randomUUID();
     private final ShortlinkRepository shortlinkRepository = new FakeShortlinkRepository(
                 new ArrayList<>(List.of(
-                        new Shortlink(existingId, "https://example.com", "abc123"),
-                        new Shortlink(UUID.randomUUID(),"https://openai.com", "def456")
+                        new Shortlink(existingId, "https://example.com", "abc123", UUID.randomUUID(), Instant.now(), Instant.now()),
+                        new Shortlink(UUID.randomUUID(),"https://openai.com", "def456", UUID.randomUUID(), Instant.now(), Instant.now())
                 ))
         );
 

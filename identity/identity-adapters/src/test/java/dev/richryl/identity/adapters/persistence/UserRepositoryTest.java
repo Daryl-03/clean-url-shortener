@@ -31,4 +31,15 @@ public abstract class UserRepositoryTest {
         assertEquals(retrievedUser.getId(), id);
         assertEquals(retrievedUser.getExternalId(), user.getExternalId());
     }
+
+    @Test
+    void saveAndFindById() {
+        UUID id = UUID.randomUUID();
+        User user = new User(id, "external-id-test-2");
+        userRepository.save(user);
+        User retrievedUser = userRepository.findById(id).orElse(null);
+        assertNotNull(retrievedUser);
+        assertEquals(retrievedUser.getId(), id);
+        assertEquals(retrievedUser.getExternalId(), user.getExternalId());
+    }
 }

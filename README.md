@@ -13,7 +13,8 @@ The project demonstrates modular boundaries (Domain, Application, Adapters, Fram
 - [x] Redirect to original URL
 - [x] In-memory data storage (can be swapped with DB)
 - [x] Authentication
-- [] User profiles (upcoming)
+- [x] User profiles created on first request
+- []
 
 ---
 

@@ -8,28 +8,29 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
-
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @WebMvcTest(
         controllers = ShortlinkController.class
 )
 @ContextConfiguration(classes = {ShortlinkController.class, GlobalShortlinkExceptionHandler.class})
-@AutoConfigureMockMvc(addFilters = false)
+@WithMockUser(value = "f47ac10b-58cc-4372-a567-0e02b2c3d479")
 public class ShortlinkControllerTest {
 
     @Autowired
@@ -43,18 +44,23 @@ public class ShortlinkControllerTest {
     private DeleteShortlinkByIdUseCase deleteShortlinkByIdUseCase;
     @MockitoBean
     private UpdateShortlinkByIdUseCase updateShortlinkByIdUseCase;
+    @MockitoBean
+    private RetrieveAllShortlinksForUserUseCase retrieveAllShortlinksForUserUseCase;
+
+    private final UUID userId = UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479");
 
     @BeforeEach
     public void setUp() {
 
-        when(createShortlinkUseCase.handle(anyString()))
+        when(createShortlinkUseCase.handle(anyString(), eq(userId)))
                 .thenAnswer(invocation -> {
                     String url = invocation.getArgument(0);
-                    return new ShortlinkResponse(UUID.randomUUID(), url, "abc123");
+                    return new ShortlinkResponse(UUID.randomUUID(), url, "abc123", Instant.now(), Instant.now());
                 });
     }
 
     @Test
+    @DisplayName("When POST request to create shortlink is made, then returns created shortlink")
     public void whenPostRequestToCreateShortlink_thenReturnsCreatedShortlink() throws Exception {
         String originalUrl = "https://example.com/some/long/path";
 
@@ -66,12 +72,14 @@ public class ShortlinkControllerTest {
 
         mockMvc.perform(post("/api/shortlinks")
                         .contentType(APPLICATION_JSON)
-                        .content(requestBody))
+                        .content(requestBody)
+                        .with(csrf())
+                )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.originalUrl").value(originalUrl))
                 .andExpect(jsonPath("$.shortCode").value("abc123"));
 
-        verify(createShortlinkUseCase, times(1)).handle(anyString());
+        verify(createShortlinkUseCase, times(1)).handle(anyString(), eq(userId));
     }
 
     @Test
@@ -84,7 +92,9 @@ public class ShortlinkControllerTest {
                 """;
         mockMvc.perform(post("/api/shortlinks")
                         .contentType(APPLICATION_JSON)
-                        .content(requestBody))
+                        .content(requestBody)
+                        .with(csrf())
+                )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").exists())
                 .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
@@ -98,6 +108,7 @@ public class ShortlinkControllerTest {
 
         mockMvc.perform(post("/api/shortlinks")
                         .contentType(APPLICATION_JSON)
+                        .with(csrf())
                 )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").exists())
@@ -114,10 +125,12 @@ public class ShortlinkControllerTest {
         UUID id = UUID.randomUUID();
 
         when(getShortlinkByIdUseCase.handle(any(UUID.class))
-        ).thenReturn(new ShortlinkResponse(id, originalUrl, shortcode));
+        ).thenReturn(new ShortlinkResponse(id, originalUrl, shortcode, Instant.now(), Instant.now()));
 
         mockMvc.perform(get("/api/shortlinks/{id}", id)
-                        .contentType(APPLICATION_JSON))
+                        .contentType(APPLICATION_JSON)
+                        .with(csrf())
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.originalUrl").value(originalUrl))
                 .andExpect(jsonPath("$.shortCode").value(shortcode))
@@ -132,7 +145,9 @@ public class ShortlinkControllerTest {
         UUID id = UUID.randomUUID();
 
         mockMvc.perform(delete("/api/shortlinks/{id}", id)
-                        .contentType(APPLICATION_JSON))
+                        .contentType(APPLICATION_JSON)
+                        .with(csrf())
+                )
                 .andExpect(status().isNoContent());
 
         verify(deleteShortlinkByIdUseCase, times(1)).handle(id);
@@ -151,7 +166,7 @@ public class ShortlinkControllerTest {
                     "url": "%s"
                 }
                 """, id, originalUrl);
-        ShortlinkResponse object = new ShortlinkResponse(id, originalUrl, shortcode);
+        ShortlinkResponse object = new ShortlinkResponse(id, originalUrl, shortcode, Instant.now(), Instant.now());
         UpdateShortlinkCommand command = new UpdateShortlinkCommand(id, originalUrl);
 
         when(updateShortlinkByIdUseCase.handle(command)).thenReturn(object);
@@ -159,6 +174,7 @@ public class ShortlinkControllerTest {
         mockMvc.perform(
                         put("/api/shortlinks").contentType(APPLICATION_JSON)
                                 .content(requestBody)
+                                .with(csrf())
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(object.id().toString()))
@@ -184,6 +200,7 @@ public class ShortlinkControllerTest {
         mockMvc.perform(
                         put("/api/shortlinks").contentType(APPLICATION_JSON)
                                 .content(requestBody)
+                                .with(csrf())
                 )
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error").exists())
@@ -191,6 +208,26 @@ public class ShortlinkControllerTest {
                 .andExpect(jsonPath("$.status").exists());
     }
 
+    @Test
+    @DisplayName("should return a list of shortlinks for the authenticated user")
+    void  shouldReturnListOfShortlinksForAuthenticatedUser() throws Exception {
+        UUID shortlinkId1 = UUID.randomUUID();
+        UUID shortlinkId2 = UUID.randomUUID();
 
+        when(retrieveAllShortlinksForUserUseCase.handle(userId))
+                .thenReturn(java.util.List.of(
+                        new ShortlinkResponse(shortlinkId1, "https://example1.com", "code1", Instant.now(), Instant.now()),
+                        new ShortlinkResponse(shortlinkId2, "https://example2.com", "code2", Instant.now(), Instant.now())
+                ));
 
+        mockMvc.perform(get("/api/shortlinks")
+                        .contentType(APPLICATION_JSON)
+                        .with(csrf())
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].id").value(shortlinkId1.toString()))
+                .andExpect(jsonPath("$.[1].id").value(shortlinkId2.toString()));
+
+        verify(retrieveAllShortlinksForUserUseCase, times(1)).handle(userId);
+    }
 }

@@ -7,6 +7,7 @@ import dev.richryl.identity.domain.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class FakeUserRepository implements UserRepository {
     private final List<User> users;
@@ -29,5 +30,12 @@ public class FakeUserRepository implements UserRepository {
     @Override
     public void save(User user) {
         users.add(user);
+    }
+
+    @Override
+    public Optional<User> findById(UUID internalId) {
+        return users.stream()
+                .filter(user -> user.getId().equals(internalId) )
+                .findFirst();
     }
 }

@@ -1,5 +1,7 @@
 package dev.richryl.identity.application.ports.in;
 
+import dev.richryl.identity.application.ports.dto.UserInfoResponse;
+
 public interface CreateUserUseCase {
-    void handle(String externalId);
+    UserInfoResponse handle(String externalId);
 }

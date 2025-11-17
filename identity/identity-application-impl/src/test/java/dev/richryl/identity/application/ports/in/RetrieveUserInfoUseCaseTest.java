@@ -47,27 +47,29 @@ public class RetrieveUserInfoUseCaseTest {
     }
 
     @Test
-    @DisplayName("Should return user information for a given external ID")
-    void shouldReturnUserInfoForGivenExternalId() {
-        UserInfoResponse user = retrieveUserInfoUseCase.handle("external-id-1");
+    @DisplayName("Should return user information for a given internal ID")
+    void shouldReturnUserInfoForGivenInternalId() {
+        UserInfoResponse user = retrieveUserInfoUseCase.handle(firtstUserId);
         assertEquals(user.id(), firtstUserId);
+        assertEquals("external-id-1", user.externalId());
     }
 
     @Test
-    @DisplayName("Should throw UserNotFound if user with given external ID does not exist")
+    @DisplayName("Should throw UserNotFound if user with given internal ID does not exist")
     void shouldThrowUserNotFoundIfUserDoesNotExist() {
         assertThrows(UserNotFoundException.class, () ->
-            retrieveUserInfoUseCase.handle("non-existing-external-id")
+            retrieveUserInfoUseCase.handle(UUID.randomUUID())
         );
     }
 
     @Test
     @DisplayName("Should log appropriate message when user is not found")
     void shouldLogMessageWhenUserNotFound() {
+        UUID userId = UUID.randomUUID();
         try {
-            retrieveUserInfoUseCase.handle("non-existing-external-id");
+            retrieveUserInfoUseCase.handle(userId);
         } catch (UserNotFoundException ignored) {}
         verify(loggerPort, Mockito.times(1)).error(Mockito.anyString());
-        verify(loggerPort).error(Mockito.contains("non-existing-external-id"));
+        verify(loggerPort).error(Mockito.contains(userId.toString()));
     }
 }

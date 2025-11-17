@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/identity")
@@ -25,8 +26,8 @@ public class IdentityController {
     public ResponseEntity<UserInfoResponse> retrieveUserInfo(
             Principal principal
     ) {
-        String externalId = principal.getName();
-        UserInfoResponse userInfo = retrieveUserInfoUseCase.handle(externalId);
+        String id = principal.getName();
+        UserInfoResponse userInfo = retrieveUserInfoUseCase.handle(UUID.fromString(id));
         return ResponseEntity.ok(userInfo);
     }
 }

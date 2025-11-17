@@ -11,6 +11,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -37,7 +38,7 @@ public class RedirectControllerTest {
         String shortcode = "abc123";
 
         when(resolveShortlinkUseCase.handle(anyString())
-        ).thenReturn(new ShortlinkResponse(UUID.randomUUID(), originalUrl, shortcode));
+        ).thenReturn(new ShortlinkResponse(UUID.randomUUID(), originalUrl, shortcode, Instant.now(), Instant.now()));
 
         mockMvc.perform(get("/s/{shortcode}", shortcode)
                         .contentType(APPLICATION_JSON))

@@ -12,6 +12,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,11 +25,12 @@ public class UpdateShortlinkByIdUseCaseTest {
 
     @BeforeEach
     void setUp() {
+        Instant added = Instant.now().minusSeconds(3600 * 24); // 1 day ago
         shortlinkRepository.save(
-            new Shortlink(existingId, "https://example.com", "abc123")
+            new Shortlink(existingId, "https://example.com", "abc123", UUID.randomUUID(), added, added)
         );
         shortlinkRepository.save(
-            new Shortlink(UUID.randomUUID(), "https://secondexample.com", "abc123567")
+            new Shortlink(UUID.randomUUID(), "https://secondexample.com", "abc123567", UUID.randomUUID(), added, added)
         );
 
     }
@@ -48,6 +51,8 @@ public class UpdateShortlinkByIdUseCaseTest {
         assertNotNull(updated);
         assertEquals(updatedUrl, updated.getOriginalUrl());
         assertEquals("abc123", updatedShortlink.shortCode());
+        assertNotNull(updated.getUpdatedAt());
+        assertNotEquals(updated.getCreatedAt().truncatedTo(ChronoUnit.SECONDS), updated.getUpdatedAt().truncatedTo(ChronoUnit.SECONDS));
     }
 
     @Test

@@ -1,6 +1,7 @@
 package dev.richryl.shortlink.adapters.persistence;
 
 import dev.richryl.shortlink.Shortlink;
+import dev.richryl.shortlink.application.ports.dto.ShortlinkResponse;
 import dev.richryl.shortlink.application.ports.out.ShortlinkRepository;
 
 import java.util.ArrayList;
@@ -46,5 +47,13 @@ public class InMemoryShortlinkRepository implements ShortlinkRepository {
                     shortlinks.add(updatedShortlink);
                     return updatedShortlink;
                 });
+    }
+
+    @Override
+    public List<ShortlinkResponse> findAllByOwnerId(UUID userId) {
+        return shortlinks.stream()
+                .filter(shortlink -> shortlink.getOwnerId().equals(userId))
+                .map(ShortlinkResponse::fromDomain)
+                .toList();
     }
 }
