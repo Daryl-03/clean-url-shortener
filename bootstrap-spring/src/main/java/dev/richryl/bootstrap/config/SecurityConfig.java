@@ -58,7 +58,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    @Profile("prod")
+    @Profile("!local")
     public JwtDecoder prodJwtDecoder() {
         String issuerLocation = System.getenv("OAUTH2_ISSUER_URI");
         NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withIssuerLocation(issuerLocation).build();

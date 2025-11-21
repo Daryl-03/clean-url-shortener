@@ -14,7 +14,7 @@ The project demonstrates modular boundaries (Domain, Application, Adapters, Fram
 - [x] In-memory data storage (can be swapped with DB)
 - [x] Authentication
 - [x] User profiles created on first request
-- []
+- [x] Analytics: track number of redirects per shortlink
 
 ---
 
