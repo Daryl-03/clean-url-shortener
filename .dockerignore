@@ -1,6 +1,7 @@
 # Fichiers et dossiers Git
 .git
 .gitignore
+.github
 
 # Dossiers de build Gradle
 build/
@@ -27,3 +28,7 @@ Thumbs.db
 
 # Documentation
 README.md
+
+# modules de test
+e2e
+scripts
