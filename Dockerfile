@@ -4,8 +4,12 @@ LABEL description="Build stage for Hopper backend Application "
 
 WORKDIR /home/gradle/src
 
-COPY --chown=gradle:gradle build.gradle.kts settings.gradle.kts gradlew ./
+COPY --chown=gradle:gradle gradlew ./
 COPY --chown=gradle:gradle gradle ./gradle
+
+RUN ./gradlew --version
+
+COPY --chown=gradle:gradle build.gradle.kts settings.gradle.kts ./
 
 RUN ./gradlew dependencies --no-daemon || return 0
 
