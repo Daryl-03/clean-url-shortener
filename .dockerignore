@@ -1,0 +1,29 @@
+# Fichiers et dossiers Git
+.git
+.gitignore
+
+# Dossiers de build Gradle
+build/
+**/build/
+
+# Cache Gradle
+.gradle/
+
+# Fichiers de configuration de l'IDE (IntelliJ)
+.idea/
+*.iml
+
+# Fichiers Docker
+Dockerfile
+.dockerignore
+
+# Fichiers de logs et de crash de la JVM
+*.log
+hs_err_pid*
+
+# Fichiers spécifiques à l'OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+README.md
