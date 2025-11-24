@@ -8,7 +8,7 @@ package dev.richryl.bootstrap.config;
     import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
     @Configuration
-    @Profile("prod")
+    @Profile("!local")
     public class ProdCorsConfiguration implements WebMvcConfigurer {
 
         private static final Logger logger = LoggerFactory.getLogger(ProdCorsConfiguration.class);

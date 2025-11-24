@@ -30,7 +30,7 @@ dependencies {
 
     implementation(project(":common-adapters"))
 
-    implementation("org.springframework.security:spring-security-oauth2-jose:7.0.0-RC3")
+    implementation("org.springframework.security:spring-security-oauth2-jose")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 
 //    spring boot
