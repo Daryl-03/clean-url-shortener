@@ -21,13 +21,15 @@ public class ShortlinkController {
     private final DeleteShortlinkByIdUseCase deleteShortlinkByIdUseCase;
     private final UpdateShortlinkByIdUseCase updateShortlinkByIdUseCase;
     private final RetrieveAllShortlinksForUserUseCase retrieveAllShortlinksForUserUseCase;
+    private final ResolveShortlinkUseCase resolveShortlinkUseCase;
 
-    public ShortlinkController(CreateShortlinkUseCase createShortlinkUseCase, GetShortlinkByIdUseCase getShortlinkByIdUseCase, DeleteShortlinkByIdUseCase deleteShortlinkByIdUseCase, UpdateShortlinkByIdUseCase updateShortlinkByIdUseCase, RetrieveAllShortlinksForUserUseCase retrieveAllShortlinksForUserUseCase) {
+    public ShortlinkController(CreateShortlinkUseCase createShortlinkUseCase, GetShortlinkByIdUseCase getShortlinkByIdUseCase, DeleteShortlinkByIdUseCase deleteShortlinkByIdUseCase, UpdateShortlinkByIdUseCase updateShortlinkByIdUseCase, RetrieveAllShortlinksForUserUseCase retrieveAllShortlinksForUserUseCase, ResolveShortlinkUseCase resolveShortlinkUseCase) {
         this.createShortlinkUseCase = createShortlinkUseCase;
         this.getShortlinkByIdUseCase = getShortlinkByIdUseCase;
         this.deleteShortlinkByIdUseCase = deleteShortlinkByIdUseCase;
         this.updateShortlinkByIdUseCase = updateShortlinkByIdUseCase;
         this.retrieveAllShortlinksForUserUseCase = retrieveAllShortlinksForUserUseCase;
+        this.resolveShortlinkUseCase = resolveShortlinkUseCase;
     }
 
     @PostMapping()
@@ -36,13 +38,18 @@ public class ShortlinkController {
             Principal principal
     ) {
         UUID ownerId = UUID.fromString(principal.getName());
-        System.err.println(principal.getName());
+
         return ResponseEntity.status(HttpStatus.CREATED).body(createShortlinkUseCase.handle(request.url(), ownerId));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ShortlinkResponse> getShortlink(@PathVariable("id") UUID id) {
         return ResponseEntity.status(HttpStatus.OK).body(getShortlinkByIdUseCase.handle(id));
+    }
+
+    @GetMapping("/slug/{shortcode}")
+    public ResponseEntity<ShortlinkResponse> getShortlink(@PathVariable("shortcode") String shortcode) {
+        return ResponseEntity.status(HttpStatus.OK).body(resolveShortlinkUseCase.handle(shortcode));
     }
 
     @DeleteMapping("/{id}")
