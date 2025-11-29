@@ -78,11 +78,11 @@ public class SecurityConfig {
         return jwtDecoder;
     }
 
-    @Bean
-    public FilterRegistrationBean<ForwardedHeaderFilter> forwardedHeaderFilter() {
-        FilterRegistrationBean<ForwardedHeaderFilter> filterRegBean = new FilterRegistrationBean<>();
-        filterRegBean.setFilter(new ForwardedHeaderFilter());
-        filterRegBean.setOrder(0);
-        return filterRegBean;
-    }
+//    @Bean
+//    public FilterRegistrationBean<ForwardedHeaderFilter> forwardedHeaderFilter() {
+//        FilterRegistrationBean<ForwardedHeaderFilter> filterRegBean = new FilterRegistrationBean<>();
+//        filterRegBean.setFilter(new ForwardedHeaderFilter());
+//        filterRegBean.setOrder(0);
+//        return filterRegBean;
+//    }
 }
