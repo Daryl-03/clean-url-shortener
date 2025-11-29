@@ -1,9 +1,12 @@
 package dev.richryl.bootstrap.config;
 
 import dev.richryl.analytics.adapters.persistence.InMemoryClickEventRepository;
-import dev.richryl.analytics.adapters.services.AnalyticsAdapter;
+import dev.richryl.analytics.adapters.services.FakeGeolocationProvider;
+import dev.richryl.analytics.adapters.services.MaxMindGeolocationProvider;
+import dev.richryl.analytics.adapters.services.YauaaDeviceParser;
 import dev.richryl.analytics.application.ports.in.CreateClickEventInteractor;
 import dev.richryl.analytics.application.ports.in.RetrieveClickEventsInteractor;
+import dev.richryl.analytics.application.ports.in.RetrieveRangedClickEventsInteractor;
 import dev.richryl.common.adapters.services.Slf4jLoggerAdapter;
 import dev.richryl.common.adapters.services.UuidIdGenerator;
 import dev.richryl.identity.adapters.persistence.InMemoryUserRepository;
@@ -12,13 +15,13 @@ import dev.richryl.identity.application.ports.out.*;
 import dev.richryl.shortlink.adapters.persistence.InMemoryShortlinkRepository;
 import dev.richryl.shortlink.adapters.services.Base62SlugGenerator;
 import dev.richryl.shortlink.application.ports.in.*;
-import dev.richryl.shortlink.application.ports.out.AnalyticsPort;
 import dev.richryl.shortlink.application.ports.out.ShortlinkIdGenerator;
 import dev.richryl.shortlink.application.ports.out.ShortlinkRepository;
 import dev.richryl.shortlink.application.ports.out.SlugGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 
 
 @Configuration
@@ -61,6 +64,11 @@ public class AppConfig {
     }
 
     @Bean
+    public GetShortlinkByShortcodeUseCase getShortlinkByShortcodeUseCase(ShortlinkRepository shortlinkRepository) {
+        return new GetShortlinkByShortcodeInteractor(shortlinkRepository);
+    }
+
+    @Bean
     public DeleteShortlinkByIdUseCase deleteShortlinkByIdUseCase(ShortlinkRepository shortlinkRepository) {
         return new DeleteShortlinkByIdInteractor(shortlinkRepository);
     }
@@ -70,14 +78,10 @@ public class AppConfig {
         return new UpdateShortlinkByIdInteractor(shortlinkRepository);
     }
 
-    @Bean
-    public AnalyticsPort analyticsPort(CreateClickEventUseCase createClickEventUseCase) {
-        return new AnalyticsAdapter(createClickEventUseCase);
-    }
 
     @Bean
-    public ResolveShortlinkUseCase resolveShortlinkUseCase(ShortlinkRepository shortlinkRepository, AnalyticsPort analyticsPort) {
-        return new ResolveShortlinkInteractor(shortlinkRepository, analyticsPort);
+    public ResolveShortlinkUseCase resolveShortlinkUseCase(ShortlinkRepository shortlinkRepository) {
+        return new ResolveShortlinkInteractor(shortlinkRepository);
     }
 
     @Bean
@@ -120,7 +124,29 @@ public class AppConfig {
     }
 
     @Bean
-    public CreateClickEventUseCase createClickEventUseCase(ClickEventRepository clickEventRepository, ClickEventIdGenerator clickEventIdGenerator) {
-        return new CreateClickEventInteractor(clickEventRepository, clickEventIdGenerator);
+    public CreateClickEventUseCase createClickEventUseCase(ClickEventRepository clickEventRepository, ClickEventIdGenerator clickEventIdGenerator, DeviceInfoParser deviceInfoParser, GeoLocationProvider geoLocationProvider) {
+        return new CreateClickEventInteractor(clickEventRepository, clickEventIdGenerator, deviceInfoParser, geoLocationProvider);
+    }
+
+    @Bean
+    @Profile("!local")
+    public GeoLocationProvider geoLocationProvider() {
+        return new MaxMindGeolocationProvider();
+    }
+
+    @Bean
+    @Profile("local")
+    public GeoLocationProvider fakegeoLocationProvider() {
+        return new FakeGeolocationProvider();
+    }
+
+    @Bean
+    public DeviceInfoParser deviceInfoParser() {
+        return new YauaaDeviceParser();
+    }
+
+    @Bean
+    public RetrieveRangedClickEventsUseCase retrieveRangedClickEventsUseCase(ClickEventRepository clickEventRepository) {
+        return new RetrieveRangedClickEventsInteractor(clickEventRepository);
     }
 }

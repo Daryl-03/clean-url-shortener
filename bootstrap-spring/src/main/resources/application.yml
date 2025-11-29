@@ -1,3 +1,6 @@
 spring:
   profiles:
     active: local
+
+maxmind.account-id: ${GEOLOCATION_MAXMIND_ACCOUNT_ID}
+maxmind.license-key: ${GEOLOCATION_MAXMIND_LICENSE_KEY}

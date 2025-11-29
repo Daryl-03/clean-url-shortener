@@ -21,15 +21,16 @@ public class ShortlinkController {
     private final DeleteShortlinkByIdUseCase deleteShortlinkByIdUseCase;
     private final UpdateShortlinkByIdUseCase updateShortlinkByIdUseCase;
     private final RetrieveAllShortlinksForUserUseCase retrieveAllShortlinksForUserUseCase;
-    private final ResolveShortlinkUseCase resolveShortlinkUseCase;
+    private final GetShortlinkByShortcodeUseCase getShortlinkByShortcodeUseCase;
 
-    public ShortlinkController(CreateShortlinkUseCase createShortlinkUseCase, GetShortlinkByIdUseCase getShortlinkByIdUseCase, DeleteShortlinkByIdUseCase deleteShortlinkByIdUseCase, UpdateShortlinkByIdUseCase updateShortlinkByIdUseCase, RetrieveAllShortlinksForUserUseCase retrieveAllShortlinksForUserUseCase, ResolveShortlinkUseCase resolveShortlinkUseCase) {
+    public ShortlinkController(CreateShortlinkUseCase createShortlinkUseCase, GetShortlinkByIdUseCase getShortlinkByIdUseCase, DeleteShortlinkByIdUseCase deleteShortlinkByIdUseCase, UpdateShortlinkByIdUseCase updateShortlinkByIdUseCase, RetrieveAllShortlinksForUserUseCase retrieveAllShortlinksForUserUseCase, GetShortlinkByShortcodeUseCase getShortlinkByShortcodeUseCase) {
         this.createShortlinkUseCase = createShortlinkUseCase;
         this.getShortlinkByIdUseCase = getShortlinkByIdUseCase;
         this.deleteShortlinkByIdUseCase = deleteShortlinkByIdUseCase;
         this.updateShortlinkByIdUseCase = updateShortlinkByIdUseCase;
         this.retrieveAllShortlinksForUserUseCase = retrieveAllShortlinksForUserUseCase;
-        this.resolveShortlinkUseCase = resolveShortlinkUseCase;
+
+        this.getShortlinkByShortcodeUseCase = getShortlinkByShortcodeUseCase;
     }
 
     @PostMapping()
@@ -49,7 +50,7 @@ public class ShortlinkController {
 
     @GetMapping("/slug/{shortcode}")
     public ResponseEntity<ShortlinkResponse> getShortlink(@PathVariable("shortcode") String shortcode) {
-        return ResponseEntity.status(HttpStatus.OK).body(resolveShortlinkUseCase.handle(shortcode));
+        return ResponseEntity.status(HttpStatus.OK).body(getShortlinkByShortcodeUseCase.handle(shortcode));
     }
 
     @DeleteMapping("/{id}")

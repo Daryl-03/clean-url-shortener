@@ -1,6 +1,8 @@
 package dev.richryl.analytics.adapters.persistence;
 
 import dev.richryl.analytics.domain.ClickEvent;
+import dev.richryl.analytics.domain.DeviceInfo;
+import dev.richryl.analytics.domain.GeoLocation;
 import dev.richryl.identity.application.ports.out.ClickEventRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,12 +28,15 @@ public abstract class ClickEventRepositoryTest {
         ClickEvent clickEvent = new ClickEvent(
                 clickEventId,
                 java.time.Instant.now(),
-                urlId
+                urlId,
+                "http://example.com",
+                GeoLocation.unknown(),
+                DeviceInfo.unknown()
         );
 
         clickEventRepository.save(clickEvent);
 
-        ClickEvent retrievedEvent = clickEventRepository.findByShortlinkId(urlId).get(0);
+        ClickEvent retrievedEvent = clickEventRepository.findByShortlinkId(urlId).getFirst();
         assertEquals(clickEventId, retrievedEvent.getId());
         assertEquals(urlId, retrievedEvent.getShortlinkId());
     }

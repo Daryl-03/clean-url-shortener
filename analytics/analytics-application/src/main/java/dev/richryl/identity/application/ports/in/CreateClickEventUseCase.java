@@ -1,7 +1,10 @@
 package dev.richryl.identity.application.ports.in;
 
-import java.util.UUID;
+
+import dev.richryl.identity.application.ports.dto.CreateClickEventCommand;
+
+
 
 public interface CreateClickEventUseCase {
-    void handle(UUID shortlinkId);
+    void handle(CreateClickEventCommand command);
 }
