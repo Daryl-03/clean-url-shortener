@@ -35,6 +35,8 @@ public class RedirectController {
                 request.getHeader("referer"),
                 request.getHeader("Accept-Language")
         );
+        System.out.println("DEBUG - Client IP (getRemoteAddr): " + request.getRemoteAddr());
+        System.out.println("DEBUG - X-Forwarded-For Header: " + request.getHeader("X-Forwarded-For"));
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.add("Location", shortlink.originalUrl());
 
