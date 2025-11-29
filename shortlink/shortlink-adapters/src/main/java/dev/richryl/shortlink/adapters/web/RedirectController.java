@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/s")
 public class RedirectController {
     private final ResolveShortlinkUseCase resolveShortlinkUseCase;
-    private final CreateClickEventUseCase createClickEventUseCase;
+    private final AsyncClickEventFacade asyncClickEventFacade;
 
-    public RedirectController(ResolveShortlinkUseCase resolveShortlinkUseCase, CreateClickEventUseCase createClickEventUseCase) {
+    public RedirectController(ResolveShortlinkUseCase resolveShortlinkUseCase, AsyncClickEventFacade asyncClickEventFacade) {
         this.resolveShortlinkUseCase = resolveShortlinkUseCase;
-        this.createClickEventUseCase = createClickEventUseCase;
+        this.asyncClickEventFacade = asyncClickEventFacade;
     }
 
     @GetMapping("/{shortCode}")
@@ -31,25 +31,15 @@ public class RedirectController {
         CreateClickEventCommand command = new CreateClickEventCommand(
                 shortlink.id(),
                 request.getHeader("User-Agent"),
-                request.getRemoteAddr(),
+                request.getHeader("cf-connecting-ip"),
                 request.getHeader("referer"),
                 request.getHeader("Accept-Language")
-        );
-        System.out.println("DEBUG - Client IP (getRemoteAddr): " + request.getRemoteAddr());
-        System.out.println("DEBUG - X-Forwarded-For Header: " + request.getHeader("X-Forwarded-For"));
-        request.getHeaderNames().asIterator().forEachRemaining(
-                headerName -> System.out.println("DEBUG - Header: " + headerName + " = " + request.getHeader(headerName))
         );
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.add("Location", shortlink.originalUrl());
 
-        logClickEvent(command);
+        asyncClickEventFacade.logClickEvent(command);
         return ResponseEntity.status(HttpStatus.FOUND).headers(responseHeaders).build();
-    }
-
-    @Async
-    protected void logClickEvent(CreateClickEventCommand command) {
-        createClickEventUseCase.handle(command);
     }
 }

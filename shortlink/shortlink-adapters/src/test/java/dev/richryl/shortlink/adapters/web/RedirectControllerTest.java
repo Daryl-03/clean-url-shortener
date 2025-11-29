@@ -32,7 +32,7 @@ public class RedirectControllerTest {
     @MockitoBean
     private ResolveShortlinkUseCase resolveShortlinkUseCase;
     @MockitoBean
-    private CreateClickEventUseCase createClickEventUseCase;
+    private AsyncClickEventFacade asyncClickEventFacade;
 
 
     @Test
@@ -52,12 +52,12 @@ public class RedirectControllerTest {
 
         when(resolveShortlinkUseCase.handle(shortcode)
         ).thenReturn(new ShortlinkResponse(uuid, originalUrl, shortcode, Instant.now(), Instant.now()));
-        doNothing().when(createClickEventUseCase).handle(any(CreateClickEventCommand.class));
+        doNothing().when(asyncClickEventFacade).logClickEvent(any(CreateClickEventCommand.class));
 
         mockMvc.perform(get("/s/{shortcode}", shortcode)
                         .contentType(APPLICATION_JSON)
                         .header("User-Agent", clickEventCommand.userAgent())
-                        .header("X-Forwarded-For", clickEventCommand.ipAddress())
+                        .header("cf-connecting-ip", clickEventCommand.ipAddress())
                         .header("Referer", clickEventCommand.referrer())
                         .header("Accept-Language", clickEventCommand.acceptLanguage())
                 )
@@ -66,6 +66,6 @@ public class RedirectControllerTest {
 
 
         verify(resolveShortlinkUseCase, times(1)).handle(shortcode);
-        verify(createClickEventUseCase, times(1)).handle(clickEventCommand);
+        verify(asyncClickEventFacade, times(1)).logClickEvent(clickEventCommand);
     }
 }
