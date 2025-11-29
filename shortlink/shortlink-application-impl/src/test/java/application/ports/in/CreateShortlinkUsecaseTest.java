@@ -17,8 +17,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CreateShortlinkUsecaseTest {
     private final SlugGenerator slugGenerator = new FakeSlugGenerator();
@@ -65,5 +64,18 @@ public class CreateShortlinkUsecaseTest {
         assertEquals(validOwnerId, retrievedShortlink.getOwnerId());
     }
 
+    @Test
+    @DisplayName("Should create unique short codes when the same URL is shortened multiple times")
+    void should_create_unique_short_codes_when_same_url_shortened_multiple_times() {
+        String validUrl = "https://example-to-be-shortened-multiple-times.com";
+        UUID validOwnerId = UUID.randomUUID();
+
+        ShortlinkResponse shortlink1 = computeShortlink(validUrl, validOwnerId);
+        ShortlinkResponse shortlink2 = computeShortlink(validUrl, validOwnerId);
+
+        assertNotNull(shortlink1);
+        assertNotNull(shortlink2);
+        assertNotEquals(shortlink1.shortCode(), shortlink2.shortCode());
+    }
 
 }

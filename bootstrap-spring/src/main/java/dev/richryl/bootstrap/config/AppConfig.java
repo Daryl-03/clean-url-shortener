@@ -1,6 +1,7 @@
 package dev.richryl.bootstrap.config;
 
 import dev.richryl.analytics.adapters.persistence.InMemoryClickEventRepository;
+import dev.richryl.analytics.adapters.services.FakeDeviceParser;
 import dev.richryl.analytics.adapters.services.FakeGeolocationProvider;
 import dev.richryl.analytics.adapters.services.MaxMindGeolocationProvider;
 import dev.richryl.analytics.adapters.services.YauaaDeviceParser;
@@ -141,8 +142,15 @@ public class AppConfig {
     }
 
     @Bean
+    @Profile("!local")
     public DeviceInfoParser deviceInfoParser() {
         return new YauaaDeviceParser();
+    }
+
+    @Bean
+    @Profile("local")
+    public DeviceInfoParser fakeDeviceInfoParser() {
+        return new FakeDeviceParser();
     }
 
     @Bean

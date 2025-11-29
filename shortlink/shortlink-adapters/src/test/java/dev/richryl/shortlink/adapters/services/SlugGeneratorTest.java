@@ -35,13 +35,13 @@ public class SlugGeneratorTest {
     }
 
     @Test
-    @DisplayName("generate is deterministic for same input")
-    void deterministicForSameInput() {
+    @DisplayName("generate is different for same input (collision resistance)")
+    void generateIsDifferentForSameInput() {
         String url = "https://example.com/path?query=1";
         String s1 = generator.generate(url);
         String s2 = generator.generate(url);
         assertNotNull(s1);
-        assertEquals(s1, s2);
+        assertNotEquals(s1, s2);
     }
 
     @Test

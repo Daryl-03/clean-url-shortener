@@ -24,6 +24,7 @@ dependencies {
     testImplementation ("org.springframework.boot:spring-boot-starter-web")
     testImplementation("org.springframework.boot:spring-boot-starter-webflux")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.awaitility:awaitility:4.3.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

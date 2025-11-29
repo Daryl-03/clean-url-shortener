@@ -6,6 +6,7 @@ import dev.richryl.shortlink.application.ports.out.SlugGenerator;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.UUID;
 
 public class Base62SlugGenerator implements SlugGenerator {
     @Override
@@ -15,11 +16,13 @@ public class Base62SlugGenerator implements SlugGenerator {
             throw new SlugGenerationException("Input URL cannot be null or empty.");
         }
         byte[] clippedHashedUrl = getPortionOfBytesFromHashedUrl(input);
-        shortCode = Base62.encode(clippedHashedUrl); // convert the decimal to a base62 encoded string
+        shortCode = Base62.encode(clippedHashedUrl);
         return shortCode;
     }
 
     private static byte[] getPortionOfBytesFromHashedUrl(String url) {
+        // add random salt to the URL to ensure uniqueness
+        url += UUID.randomUUID().toString();
         MessageDigest md;
         try {
             md = MessageDigest.getInstance("MD5");

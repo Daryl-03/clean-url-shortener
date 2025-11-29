@@ -39,8 +39,9 @@ public class AnalyticsE2ETest {
         assertNotNull(createResponse.data().getResponseBody());
         String id = (String) createResponse.data().getResponseBody().get("id");
         String shortCode = (String) createResponse.data().getResponseBody().get("shortCode");
-
+        System.err.println("Created shortlink  1 with ID: " + id + " and shortCode: " + shortCode);
         String fakeUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3";
+
         int resolveCount = 5;
         for (int i = 0; i < resolveCount; i++) {
             webTestClient.get()
@@ -51,6 +52,7 @@ public class AnalyticsE2ETest {
                     .exchange()
                     .expectStatus().is3xxRedirection();
         }
+
 
         // Retrieve analytics data
         webTestClient.get()
@@ -64,7 +66,7 @@ public class AnalyticsE2ETest {
                 .jsonPath("$.[0].location").exists()
                 .jsonPath("$.[0].referer").exists()
                 .jsonPath("$.[0].device").exists()
-                .jsonPath("$.[0].device.browser").isEqualTo("Chrome");
+                .jsonPath("$.[0].device.browser").isEqualTo("FakeBrowser");
     }
 
     @Test
@@ -83,7 +85,7 @@ public class AnalyticsE2ETest {
         assertNotNull(createResponse.data().getResponseBody());
         String id = (String) createResponse.data().getResponseBody().get("id");
         String shortCode = (String) createResponse.data().getResponseBody().get("shortCode");
-
+        System.err.println("Created shortlink with ID: " + id + " and shortCode: " + shortCode);
         String fakeUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3";
 
         // Resolve the shortlink multiple times to generate analytics data
@@ -116,7 +118,7 @@ public class AnalyticsE2ETest {
                 .jsonPath("$.[0].location").exists()
                 .jsonPath("$.[0].referer").exists()
                 .jsonPath("$.[0].device").exists()
-                .jsonPath("$.[0].device.browser").isEqualTo("Chrome")
+                .jsonPath("$.[0].device.browser").isEqualTo("FakeBrowser")
                 .jsonPath("$.[4].id").exists();
 
         webTestClient.get()

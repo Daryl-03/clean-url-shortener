@@ -8,6 +8,7 @@ import dev.richryl.shortlink.application.ports.in.ResolveShortlinkUseCase;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.*;
 
 
@@ -34,6 +35,7 @@ public class RedirectController {
         );
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.add("Location", shortlink.originalUrl());
+
         createClickEventUseCase.handle(command);
         return ResponseEntity.status(HttpStatus.FOUND).headers(responseHeaders).build();
     }

@@ -4,15 +4,15 @@ import dev.richryl.analytics.domain.ClickEvent;
 import dev.richryl.identity.application.ports.out.ClickEventRepository;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class InMemoryClickEventRepository implements ClickEventRepository {
     private final List<ClickEvent> clickEvents;
 
     public InMemoryClickEventRepository() {
-        clickEvents = new ArrayList<>();
+        clickEvents = new CopyOnWriteArrayList<>();
     }
 
     @Override
