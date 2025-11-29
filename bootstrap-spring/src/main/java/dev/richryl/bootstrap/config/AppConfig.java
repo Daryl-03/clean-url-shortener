@@ -1,10 +1,7 @@
 package dev.richryl.bootstrap.config;
 
 import dev.richryl.analytics.adapters.persistence.InMemoryClickEventRepository;
-import dev.richryl.analytics.adapters.services.FakeDeviceParser;
-import dev.richryl.analytics.adapters.services.FakeGeolocationProvider;
-import dev.richryl.analytics.adapters.services.MaxMindGeolocationProvider;
-import dev.richryl.analytics.adapters.services.YauaaDeviceParser;
+import dev.richryl.analytics.adapters.services.*;
 import dev.richryl.analytics.application.ports.in.CreateClickEventInteractor;
 import dev.richryl.analytics.application.ports.in.RetrieveClickEventsInteractor;
 import dev.richryl.analytics.application.ports.in.RetrieveRangedClickEventsInteractor;
@@ -19,6 +16,7 @@ import dev.richryl.shortlink.application.ports.in.*;
 import dev.richryl.shortlink.application.ports.out.ShortlinkIdGenerator;
 import dev.richryl.shortlink.application.ports.out.ShortlinkRepository;
 import dev.richryl.shortlink.application.ports.out.SlugGenerator;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -130,9 +128,14 @@ public class AppConfig {
     }
 
     @Bean
+    public RestTemplateBuilder restTemplateBuilder() {
+        return new RestTemplateBuilder();
+    }
+
+    @Bean
     @Profile("!local")
-    public GeoLocationProvider geoLocationProvider() {
-        return new MaxMindGeolocationProvider();
+    public GeoLocationProvider geoLocationProvider(RestTemplateBuilder restTemplateBuilder) {
+        return new IPAPIGeolocationProvider(restTemplateBuilder);
     }
 
     @Bean

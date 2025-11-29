@@ -1,7 +1,6 @@
 package dev.richryl.analytics.adapters.services;
 
 import com.maxmind.geoip2.WebServiceClient;
-import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CityResponse;
 import com.maxmind.geoip2.model.CountryResponse;
 import com.maxmind.geoip2.record.City;
@@ -12,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.io.IOException;
 import java.net.InetAddress;
 
 public class MaxMindGeolocationProvider implements GeoLocationProvider {
@@ -25,7 +23,7 @@ public class MaxMindGeolocationProvider implements GeoLocationProvider {
     private final Logger logger = LoggerFactory.getLogger(MaxMindGeolocationProvider.class);
 
     public MaxMindGeolocationProvider() {
-        this.client = new WebServiceClient.Builder(accountId, licenseKey)
+        this.client = new WebServiceClient.Builder(accountId, licenseKey).host("geolite.info")
                 .build();
     }
 
@@ -34,7 +32,7 @@ public class MaxMindGeolocationProvider implements GeoLocationProvider {
 
         try {
             InetAddress inetIpAddress;
-            inetIpAddress = InetAddress.getByName("128.101.101.101");
+            inetIpAddress = InetAddress.getByName(ipAddress);
             CountryResponse response = client.country(inetIpAddress);
             CityResponse cityResponse = client.city(inetIpAddress);
             City city = cityResponse.city();
@@ -47,9 +45,10 @@ public class MaxMindGeolocationProvider implements GeoLocationProvider {
                     country.name(),
                     city.name()
             );
-        } catch (IOException | GeoIp2Exception e) {
+        } catch (Exception e) {
+            logger.error("accountId: " + accountId + ", licenseKey: " + licenseKey);
             logger.error("Failed to get geolocation for IP: " + ipAddress, e);
-            throw new RuntimeException(e);
+            return GeoLocation.unknown();
         }
     }
 }
