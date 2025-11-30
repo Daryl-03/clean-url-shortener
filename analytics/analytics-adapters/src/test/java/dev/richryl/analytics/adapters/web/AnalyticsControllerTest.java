@@ -5,6 +5,7 @@ import dev.richryl.analytics.domain.GeoLocation;
 import dev.richryl.identity.application.ports.dto.ClickEventResponse;
 import dev.richryl.identity.application.ports.in.RetrieveClickEventsUseCase;
 import dev.richryl.identity.application.ports.in.RetrieveRangedClickEventsUseCase;
+import dev.richryl.identity.application.ports.in.RetrieveRangedCuratedClickEventsUseCase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,6 +39,8 @@ public class AnalyticsControllerTest {
     private RetrieveClickEventsUseCase retrieveClickEventsUseCase;
     @MockitoBean
     private RetrieveRangedClickEventsUseCase retrieveRangedClickEventsUseCase;
+    @MockitoBean
+    private RetrieveRangedCuratedClickEventsUseCase retrieveRangedCuratedClickEventsUseCase;
 
     @Test
     @DisplayName("Should return a list of click events related to a shortened URL")
@@ -96,5 +100,45 @@ public class AnalyticsControllerTest {
                 .param("to", Instant.now().toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[1].location.countryName").value("Ile-de-France"));
+    }
+
+    @Test
+    @DisplayName("Should return a curated list of click events related to a shortened URL within a date range")
+    void shouldReturnCuratedListOfClickEventsBasedOnIdWithinDateRange() throws Exception {
+        UUID id = UUID.randomUUID();
+        when(retrieveRangedCuratedClickEventsUseCase.handle(any(UUID.class), any(Instant.class), any(Instant.class)))
+                .thenReturn(
+                                new ClickEventStatResponse(
+                                        4,
+                                        List.of(
+                                                new BrowserStat("Chrome", 2),
+                                                new BrowserStat("Firefox", 1),
+                                                new BrowserStat("Safari", 1)
+                                        ),
+                                        List.of(
+                                                new CountryStat("Germany", "Berlin", 3),
+                                                new CountryStat("France", "paris", 1)
+                                        ),
+                                        List.of(
+                                                new ClickPerDayDeviceTypeStat(
+                                                        Instant.now().minus(3, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS),
+                                                        "Desktop",
+                                                        2
+                                                ),
+                                                new ClickPerDayDeviceTypeStat(
+                                                        Instant.now().minus(2, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS),
+                                                        "Mobile",
+                                                        1
+                                                ),
+                                                new ClickPerDayDeviceTypeStat(
+                                                        Instant.now().minus(1, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS),
+                                                        "Tablet",
+                                                        1
+                                                )
+                                        )
+                                )
+
+                );
+
     }
 }

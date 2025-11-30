@@ -26,32 +26,7 @@ public class AnalyticsE2ETest {
     @Test
     @DisplayName("should retrieve analytics data for a shortlink")
     void shouldRetrieveAnalyticsDataForShortlink() {
-        String url = "https://example.com/some/long/path";
-        String requestBody = """
-                {
-                    "url": "%s"
-                }
-                """.formatted(url);
-
-        // Create a shortlink first
-
-        HelperMethod.ResponseData createResponse = HelperMethod.createShortlinkRequest(requestBody, webTestClient);
-        assertNotNull(createResponse.data().getResponseBody());
-        String id = (String) createResponse.data().getResponseBody().get("id");
-        String shortCode = (String) createResponse.data().getResponseBody().get("shortCode");
-        System.err.println("Created shortlink  1 with ID: " + id + " and shortCode: " + shortCode);
-        String fakeUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3";
-
-        int resolveCount = 5;
-        for (int i = 0; i < resolveCount; i++) {
-            webTestClient.get()
-                    .uri("/s/{shortcode}", shortCode)
-                    .header("User-Agent", fakeUserAgent)
-                    .header("referer", "https://referrer.com/page")
-                    .header("X-Forwarded-For", "10.10.101.10")
-                    .exchange()
-                    .expectStatus().is3xxRedirection();
-        }
+        String id = makeSomeAnalyticsdata();
 
 
         // Retrieve analytics data
@@ -72,34 +47,7 @@ public class AnalyticsE2ETest {
     @Test
     @DisplayName("should retrieve analytics data for a shortlink within date range")
     void shouldRetrieveAnalyticsDataForShortlinkWithinDateRange() {
-        String url = "https://example.com/some/long/path";
-        String requestBody = """
-                {
-                    "url": "%s"
-                }
-                """.formatted(url);
-
-        // Create a shortlink first
-
-        HelperMethod.ResponseData createResponse = HelperMethod.createShortlinkRequest(requestBody, webTestClient);
-        assertNotNull(createResponse.data().getResponseBody());
-        String id = (String) createResponse.data().getResponseBody().get("id");
-        String shortCode = (String) createResponse.data().getResponseBody().get("shortCode");
-        System.err.println("Created shortlink with ID: " + id + " and shortCode: " + shortCode);
-        String fakeUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3";
-
-        // Resolve the shortlink multiple times to generate analytics data
-        int resolveCount = 5;
-        for (int i = 0; i < resolveCount; i++) {
-            webTestClient.get()
-                    .uri("/s/{shortcode}", shortCode)
-                    .header("User-Agent", fakeUserAgent)
-                    .header("referer", "https://referrer.com/page")
-                    .header("X-Forwarded-For", "10.10.101.10")
-                    .exchange()
-                    .expectStatus().is3xxRedirection();
-        }
-
+        String id = makeSomeAnalyticsdata();
 
 
         // Retrieve analytics data
@@ -131,5 +79,61 @@ public class AnalyticsE2ETest {
                 .exchange()
                 .expectBody()
                 .jsonPath("$.[0].id").doesNotExist();
+    }
+
+    private String makeSomeAnalyticsdata() {
+        String url = "https://example.com/some/long/path";
+        String requestBody = """
+                {
+                    "url": "%s"
+                }
+                """.formatted(url);
+
+        // Create a shortlink first
+
+        HelperMethod.ResponseData createResponse = HelperMethod.createShortlinkRequest(requestBody, webTestClient);
+        assertNotNull(createResponse.data().getResponseBody());
+        String id = (String) createResponse.data().getResponseBody().get("id");
+        String shortCode = (String) createResponse.data().getResponseBody().get("shortCode");
+        String fakeUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3";
+
+        // Resolve the shortlink multiple times to generate analytics data
+        int resolveCount = 5;
+        for (int i = 0; i < resolveCount; i++) {
+            webTestClient.get()
+                    .uri("/s/{shortcode}", shortCode)
+                    .header("User-Agent", fakeUserAgent)
+                    .header("referer", "https://referrer.com/page")
+                    .header("X-Forwarded-For", "10.10.101.10")
+                    .exchange()
+                    .expectStatus().is3xxRedirection();
+        }
+        return id;
+    }
+
+    @Test
+    @DisplayName("should return curated analytics data within date range")
+    void shouldReturnCuratedAnalyticsDataWithinDateRange() {
+        String id = makeSomeAnalyticsdata();
+
+        // Retrieve curated analytics data
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/analytics/{id}/curated")
+                        .queryParam("from", Instant.now().minus(1, java.time.temporal.ChronoUnit.DAYS).toString())
+                        .queryParam("to", Instant.now())
+                        .build(id))
+                .header("Authorization", "Bearer " + TOKEN)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.totalClicks").isEqualTo(5)
+                .jsonPath("$.topBrowsers[0].browser").isEqualTo("FakeBrowser")
+                .jsonPath("$.topBrowsers[0].count").isEqualTo(5)
+                .jsonPath("$.topLocations[0].location").isEqualTo("FakeLocation")
+                .jsonPath("$.topLocations[0].count").isEqualTo(5)
+                .jsonPath("$.clicksPerDayPerDevice[0].date").exists()
+                .jsonPath("$.clicksPerDayPerDevice[0].device").exists()
+                .jsonPath("$.clicksPerDayPerDevice[0].count").isEqualTo(5);
     }
 }

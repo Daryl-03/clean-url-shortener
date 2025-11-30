@@ -38,7 +38,6 @@ public class RedirectController {
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.add("Location", shortlink.originalUrl());
-
         asyncClickEventFacade.logClickEvent(command);
         return ResponseEntity.status(HttpStatus.FOUND).headers(responseHeaders).build();
     }
