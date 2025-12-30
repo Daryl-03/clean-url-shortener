@@ -64,7 +64,7 @@ public class RetrieveRangedCuratedClickEventsUseCaseTest {
 
         assertNotNull(result);
         assertEquals(40, result.totalClicks());
-        assertEquals(2, result.clicksPerDayDeviceType().size());
+        assertEquals(2, result.clicksPerDayPerDeviceType().size());
         assertEquals(2, result.browserStats().size());
         assertEquals(2, result.countryStats().size());
 
