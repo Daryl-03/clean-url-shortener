@@ -26,6 +26,7 @@ package dev.richryl.bootstrap.config;
 
         @Override
         public void addCorsMappings(CorsRegistry registry) {
+            logger.info("Adding CORS mappings : " + (allowedOrigins != null ? allowedOrigins.split(",") : "[]"));
             registry.addMapping("/api/**")
                     .allowedOrigins(allowedOrigins != null ? allowedOrigins.split(",") : new String[]{})
                     .allowedMethods("POST", "GET", "PUT", "DELETE")
