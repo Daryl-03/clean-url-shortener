@@ -1,10 +1,10 @@
 package dev.richryl.bootstrap.config;
 
 import dev.richryl.analytics.adapters.persistence.InMemoryClickEventRepository;
+import dev.richryl.analytics.adapters.persistence.InMemoryClickEventStatRepository;
 import dev.richryl.analytics.adapters.services.*;
-import dev.richryl.analytics.application.ports.in.CreateClickEventInteractor;
-import dev.richryl.analytics.application.ports.in.RetrieveClickEventsInteractor;
-import dev.richryl.analytics.application.ports.in.RetrieveRangedClickEventsInteractor;
+import dev.richryl.analytics.application.ports.in.*;
+import dev.richryl.analytics.application.ports.out.*;
 import dev.richryl.common.adapters.services.Slf4jLoggerAdapter;
 import dev.richryl.common.adapters.services.UuidIdGenerator;
 import dev.richryl.identity.adapters.persistence.InMemoryUserRepository;
@@ -159,5 +159,15 @@ public class AppConfig {
     @Bean
     public RetrieveRangedClickEventsUseCase retrieveRangedClickEventsUseCase(ClickEventRepository clickEventRepository) {
         return new RetrieveRangedClickEventsInteractor(clickEventRepository);
+    }
+
+    @Bean
+    public ClickEventStatRepository clickEventStatRepository(ClickEventRepository clickEventRepository) {
+        return  new InMemoryClickEventStatRepository(clickEventRepository);
+    }
+
+    @Bean
+    public RetrieveRangedCuratedClickEventsUseCase retrieveRangedCuratedClickEventsUseCase(ClickEventStatRepository clickEventStatRepository) {
+        return new RetrieveRangedCuratedClickEventsInteractor(clickEventStatRepository);
     }
 }

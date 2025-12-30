@@ -1,4 +1,4 @@
-package dev.richryl.identity.application.ports.dto;
+package dev.richryl.analytics.application.ports.dto;
 
 import dev.richryl.analytics.domain.ClickEvent;
 import dev.richryl.analytics.domain.DeviceInfo;

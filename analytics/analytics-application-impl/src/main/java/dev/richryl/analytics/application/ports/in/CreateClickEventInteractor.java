@@ -3,12 +3,11 @@ package dev.richryl.analytics.application.ports.in;
 import dev.richryl.analytics.domain.ClickEvent;
 import dev.richryl.analytics.domain.DeviceInfo;
 import dev.richryl.analytics.domain.GeoLocation;
-import dev.richryl.identity.application.ports.dto.CreateClickEventCommand;
-import dev.richryl.identity.application.ports.in.CreateClickEventUseCase;
-import dev.richryl.identity.application.ports.out.ClickEventIdGenerator;
-import dev.richryl.identity.application.ports.out.ClickEventRepository;
-import dev.richryl.identity.application.ports.out.DeviceInfoParser;
-import dev.richryl.identity.application.ports.out.GeoLocationProvider;
+import dev.richryl.analytics.application.ports.dto.CreateClickEventCommand;
+import dev.richryl.analytics.application.ports.out.ClickEventIdGenerator;
+import dev.richryl.analytics.application.ports.out.ClickEventRepository;
+import dev.richryl.analytics.application.ports.out.DeviceInfoParser;
+import dev.richryl.analytics.application.ports.out.GeoLocationProvider;
 
 import java.time.Instant;
 import java.util.UUID;

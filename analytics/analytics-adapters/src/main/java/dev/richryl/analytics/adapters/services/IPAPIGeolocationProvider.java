@@ -2,7 +2,7 @@
 package dev.richryl.analytics.adapters.services;
 
 import dev.richryl.analytics.domain.GeoLocation;
-import dev.richryl.identity.application.ports.out.GeoLocationProvider;
+import dev.richryl.analytics.application.ports.out.GeoLocationProvider;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;

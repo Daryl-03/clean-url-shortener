@@ -1,11 +1,11 @@
 package dev.richryl.analytics.adapters.web;
 
+import dev.richryl.analytics.application.ports.dto.*;
 import dev.richryl.analytics.domain.DeviceInfo;
 import dev.richryl.analytics.domain.GeoLocation;
-import dev.richryl.identity.application.ports.dto.ClickEventResponse;
-import dev.richryl.identity.application.ports.in.RetrieveClickEventsUseCase;
-import dev.richryl.identity.application.ports.in.RetrieveRangedClickEventsUseCase;
-import dev.richryl.identity.application.ports.in.RetrieveRangedCuratedClickEventsUseCase;
+import dev.richryl.analytics.application.ports.in.RetrieveClickEventsUseCase;
+import dev.richryl.analytics.application.ports.in.RetrieveRangedClickEventsUseCase;
+import dev.richryl.analytics.application.ports.in.RetrieveRangedCuratedClickEventsUseCase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +17,11 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -120,17 +119,17 @@ public class AnalyticsControllerTest {
                                                 new CountryStat("France", "paris", 1)
                                         ),
                                         List.of(
-                                                new ClickPerDayDeviceTypeStat(
+                                                new ClickPerDayPerDeviceTypeStat(
                                                         Instant.now().minus(3, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS),
                                                         "Desktop",
                                                         2
                                                 ),
-                                                new ClickPerDayDeviceTypeStat(
+                                                new ClickPerDayPerDeviceTypeStat(
                                                         Instant.now().minus(2, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS),
                                                         "Mobile",
                                                         1
                                                 ),
-                                                new ClickPerDayDeviceTypeStat(
+                                                new ClickPerDayPerDeviceTypeStat(
                                                         Instant.now().minus(1, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS),
                                                         "Tablet",
                                                         1
@@ -140,5 +139,15 @@ public class AnalyticsControllerTest {
 
                 );
 
+        mockMvc.perform(get("/api/analytics/{urlId}/curated", id)
+                .param("from", Instant.now().minus(7, ChronoUnit.DAYS).toString())
+                .param("to", Instant.now().toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalClicks").value(4))
+                .andExpect(jsonPath("$.browserStats[0].browser").value("Chrome"))
+                .andExpect(jsonPath("$.countryStats[0].countryName").value("Germany"))
+                .andExpect(jsonPath("$.clicksPerDayDeviceType[0].deviceType").value("Desktop"));
+
+        verify(retrieveRangedCuratedClickEventsUseCase, times(1)).handle(any(UUID.class), any(Instant.class), any(Instant.class));
     }
 }

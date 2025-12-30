@@ -1,6 +1,6 @@
 package dev.richryl.analytics.adapters.persistence;
 
-import dev.richryl.identity.application.ports.out.ClickEventRepository;
+import dev.richryl.analytics.application.ports.out.ClickEventRepository;
 
 public class InMemoryClickEventRepositoryTest extends ClickEventRepositoryTest {
     @Override

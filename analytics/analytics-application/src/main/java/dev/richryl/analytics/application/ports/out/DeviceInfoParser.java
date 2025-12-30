@@ -1,4 +1,4 @@
-package dev.richryl.identity.application.ports.out;
+package dev.richryl.analytics.application.ports.out;
 
 import dev.richryl.analytics.domain.DeviceInfo;
 

@@ -1,7 +1,7 @@
 package dev.richryl.analytics.adapters.persistence;
 
 import dev.richryl.analytics.domain.ClickEvent;
-import dev.richryl.identity.application.ports.out.ClickEventRepository;
+import dev.richryl.analytics.application.ports.out.ClickEventRepository;
 
 import java.time.Instant;
 import java.util.List;

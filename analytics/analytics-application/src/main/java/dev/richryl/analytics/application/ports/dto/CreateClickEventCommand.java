@@ -1,4 +1,4 @@
-package dev.richryl.identity.application.ports.dto;
+package dev.richryl.analytics.application.ports.dto;
 
 import java.util.UUID;
 

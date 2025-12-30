@@ -1,7 +1,7 @@
 package dev.richryl.analytics.adapters.services;
 
 import dev.richryl.analytics.domain.DeviceInfo;
-import dev.richryl.identity.application.ports.out.DeviceInfoParser;
+import dev.richryl.analytics.application.ports.out.DeviceInfoParser;
 import nl.basjes.parse.useragent.UserAgent;
 import nl.basjes.parse.useragent.UserAgentAnalyzer;
 

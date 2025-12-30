@@ -3,7 +3,7 @@ package dev.richryl.analytics.adapters.persistence;
 import dev.richryl.analytics.domain.ClickEvent;
 import dev.richryl.analytics.domain.DeviceInfo;
 import dev.richryl.analytics.domain.GeoLocation;
-import dev.richryl.identity.application.ports.out.ClickEventRepository;
+import dev.richryl.analytics.application.ports.out.ClickEventRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

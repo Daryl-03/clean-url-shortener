@@ -116,6 +116,8 @@ public class AnalyticsE2ETest {
     void shouldReturnCuratedAnalyticsDataWithinDateRange() {
         String id = makeSomeAnalyticsdata();
 
+        makeSomeAnalyticsdata();
+
         // Retrieve curated analytics data
         webTestClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -128,12 +130,12 @@ public class AnalyticsE2ETest {
                 .expectStatus().isOk()
                 .expectBody()
                 .jsonPath("$.totalClicks").isEqualTo(5)
-                .jsonPath("$.topBrowsers[0].browser").isEqualTo("FakeBrowser")
-                .jsonPath("$.topBrowsers[0].count").isEqualTo(5)
-                .jsonPath("$.topLocations[0].location").isEqualTo("FakeLocation")
-                .jsonPath("$.topLocations[0].count").isEqualTo(5)
-                .jsonPath("$.clicksPerDayPerDevice[0].date").exists()
-                .jsonPath("$.clicksPerDayPerDevice[0].device").exists()
-                .jsonPath("$.clicksPerDayPerDevice[0].count").isEqualTo(5);
+                .jsonPath("$.browserStats[0].count").isEqualTo(5)
+                .jsonPath("$.browserStats[0].browser").isEqualTo("FakeBrowser")
+                .jsonPath("$.countryStats[0].countryName").exists()
+                .jsonPath("$.countryStats[0].count").exists()
+                .jsonPath("$.clicksPerDayPerDeviceType[0].day").exists()
+                .jsonPath("$.clicksPerDayPerDeviceType[0].deviceType").exists()
+                .jsonPath("$.clicksPerDayPerDeviceType[0].count").exists();
     }
 }

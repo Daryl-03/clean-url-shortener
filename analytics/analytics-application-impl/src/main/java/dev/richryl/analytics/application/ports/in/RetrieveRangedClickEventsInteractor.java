@@ -1,8 +1,7 @@
 package dev.richryl.analytics.application.ports.in;
 
-import dev.richryl.identity.application.ports.dto.ClickEventResponse;
-import dev.richryl.identity.application.ports.in.RetrieveRangedClickEventsUseCase;
-import dev.richryl.identity.application.ports.out.ClickEventRepository;
+import dev.richryl.analytics.application.ports.dto.ClickEventResponse;
+import dev.richryl.analytics.application.ports.out.ClickEventRepository;
 
 import java.time.Instant;
 import java.util.List;

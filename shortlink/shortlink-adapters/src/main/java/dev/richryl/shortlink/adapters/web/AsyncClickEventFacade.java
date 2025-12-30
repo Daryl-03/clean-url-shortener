@@ -1,7 +1,7 @@
 package dev.richryl.shortlink.adapters.web;
 
-import dev.richryl.identity.application.ports.dto.CreateClickEventCommand;
-import dev.richryl.identity.application.ports.in.CreateClickEventUseCase;
+import dev.richryl.analytics.application.ports.dto.CreateClickEventCommand;
+import dev.richryl.analytics.application.ports.in.CreateClickEventUseCase;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 

@@ -1,7 +1,7 @@
 package dev.richryl.common.adapters.services;
 
 
-import dev.richryl.identity.application.ports.out.ClickEventIdGenerator;
+import dev.richryl.analytics.application.ports.out.ClickEventIdGenerator;
 import dev.richryl.identity.application.ports.out.UserIdGenerator;
 import dev.richryl.shortlink.application.ports.out.ShortlinkIdGenerator;
 

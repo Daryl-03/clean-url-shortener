@@ -1,7 +1,7 @@
-package dev.richryl.identity.application.ports.in;
+package dev.richryl.analytics.application.ports.in;
 
 
-import dev.richryl.identity.application.ports.dto.ClickEventResponse;
+import dev.richryl.analytics.application.ports.dto.ClickEventResponse;
 
 import java.time.Instant;
 import java.util.List;

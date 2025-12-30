@@ -1,7 +1,6 @@
 package dev.richryl.shortlink.adapters.web;
 
-import dev.richryl.identity.application.ports.dto.CreateClickEventCommand;
-import dev.richryl.identity.application.ports.in.CreateClickEventUseCase;
+import dev.richryl.analytics.application.ports.dto.CreateClickEventCommand;
 
 import dev.richryl.shortlink.application.ports.dto.ShortlinkResponse;
 import dev.richryl.shortlink.application.ports.in.ResolveShortlinkUseCase;
@@ -10,7 +9,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 
 

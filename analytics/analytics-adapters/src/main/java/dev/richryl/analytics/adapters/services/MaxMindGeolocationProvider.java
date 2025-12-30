@@ -6,7 +6,7 @@ import com.maxmind.geoip2.model.CountryResponse;
 import com.maxmind.geoip2.record.City;
 import com.maxmind.geoip2.record.Country;
 import dev.richryl.analytics.domain.GeoLocation;
-import dev.richryl.identity.application.ports.out.GeoLocationProvider;
+import dev.richryl.analytics.application.ports.out.GeoLocationProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
