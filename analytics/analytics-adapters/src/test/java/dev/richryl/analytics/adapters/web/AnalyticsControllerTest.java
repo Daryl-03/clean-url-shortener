@@ -146,7 +146,7 @@ public class AnalyticsControllerTest {
                 .andExpect(jsonPath("$.totalClicks").value(4))
                 .andExpect(jsonPath("$.browserStats[0].browser").value("Chrome"))
                 .andExpect(jsonPath("$.countryStats[0].countryName").value("Germany"))
-                .andExpect(jsonPath("$.clicksPerDayDeviceType[0].deviceType").value("Desktop"));
+                .andExpect(jsonPath("$.clicksPerDayPerDeviceType[0].deviceType").value("Desktop"));
 
         verify(retrieveRangedCuratedClickEventsUseCase, times(1)).handle(any(UUID.class), any(Instant.class), any(Instant.class));
     }
