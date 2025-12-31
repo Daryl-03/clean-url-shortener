@@ -53,14 +53,23 @@ public class InMemoryClickEventStatRepository implements ClickEventStatRepositor
             String deviceType = click.getDevice().deviceType();
             dateDeviceTypeMap.putIfAbsent(date, new HashMap<>());
             Map<String, Integer> deviceTypeMap = dateDeviceTypeMap.get(date);
-            deviceTypeMap.put(deviceType, deviceTypeMap.getOrDefault(deviceType, 0) + 1);
+            initializeDeviceTypeMap(deviceTypeMap);
+            deviceTypeMap.put(
+                    deviceType.equalsIgnoreCase("desktop") || deviceType.equalsIgnoreCase("mobile") ? deviceType.toLowerCase() : "others",
+                    deviceTypeMap.getOrDefault(deviceType, 0) + 1);
         });
         dateDeviceTypeMap.forEach((date, deviceTypeMap) -> {
-            deviceTypeMap.forEach((deviceType, count) -> {
-                clicksPerDayDeviceTypeStats.add(new ClickPerDayPerDeviceTypeStat(Instant.parse(date + "T00:00:00Z"), deviceType, count));
-            });
+            clicksPerDayDeviceTypeStats.add(new ClickPerDayPerDeviceTypeStat(
+                    Instant.parse(date + "T00:00:00Z"),
+                    deviceTypeMap));
         });
         return clicksPerDayDeviceTypeStats;
+    }
+
+    private void initializeDeviceTypeMap(Map<String, Integer> deviceTypeMap) {
+        deviceTypeMap.put("desktop", 0);
+        deviceTypeMap.put("mobile", 0);
+        deviceTypeMap.put("other", 0);
     }
 
     @Override

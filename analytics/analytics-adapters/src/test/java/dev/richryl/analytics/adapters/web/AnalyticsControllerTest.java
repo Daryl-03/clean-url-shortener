@@ -17,7 +17,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -121,18 +123,25 @@ public class AnalyticsControllerTest {
                                         List.of(
                                                 new ClickPerDayPerDeviceTypeStat(
                                                         Instant.now().minus(3, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS),
-                                                        "Desktop",
-                                                        2
+                                                        Map.of(
+                                                                "desktop", 2,
+                                                                "mobile", 1,
+                                                                "others", 0
+                                                        )
                                                 ),
                                                 new ClickPerDayPerDeviceTypeStat(
                                                         Instant.now().minus(2, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS),
-                                                        "Mobile",
-                                                        1
+                                                        Map.of(
+                                                                "desktop", 0,
+                                                                "mobile", 1,
+                                                                "others", 0)
                                                 ),
                                                 new ClickPerDayPerDeviceTypeStat(
                                                         Instant.now().minus(1, ChronoUnit.DAYS).truncatedTo(ChronoUnit.DAYS),
-                                                        "Tablet",
-                                                        1
+                                                        Map.of(
+                                                                "desktop", 1,
+                                                                "mobile", 0,
+                                                                "others", 0)
                                                 )
                                         )
                                 )
@@ -146,7 +155,11 @@ public class AnalyticsControllerTest {
                 .andExpect(jsonPath("$.totalClicks").value(4))
                 .andExpect(jsonPath("$.browserStats[0].browser").value("Chrome"))
                 .andExpect(jsonPath("$.countryStats[0].countryName").value("Germany"))
-                .andExpect(jsonPath("$.clicksPerDayPerDeviceType[0].deviceType").value("Desktop"));
+                .andExpect(jsonPath("$.clicksPerDayPerDeviceType[0].countsPerDeviceType").exists())
+                .andExpect(jsonPath("$.clicksPerDayPerDeviceType[0].date").exists())
+                .andExpect(jsonPath("$.clicksPerDayPerDeviceType[0].countsPerDeviceType.desktop").exists())
+                .andExpect(jsonPath("$.clicksPerDayPerDeviceType[0].countsPerDeviceType.mobile").exists())
+                .andExpect(jsonPath("$.clicksPerDayPerDeviceType[0].countsPerDeviceType.others").exists());
 
         verify(retrieveRangedCuratedClickEventsUseCase, times(1)).handle(any(UUID.class), any(Instant.class), any(Instant.class));
     }

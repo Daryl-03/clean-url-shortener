@@ -1,11 +1,11 @@
 package dev.richryl.analytics.application.ports.dto;
 
 import java.time.Instant;
+import java.util.Map;
 
 public record ClickPerDayPerDeviceTypeStat(
-        Instant day,
-        String deviceType,
-        int count
+        Instant date,
+        Map<String, Integer> countsPerDeviceType
 ) {
 }
 

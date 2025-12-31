@@ -134,8 +134,11 @@ public class AnalyticsE2ETest {
                 .jsonPath("$.browserStats[0].browser").isEqualTo("FakeBrowser")
                 .jsonPath("$.countryStats[0].countryName").exists()
                 .jsonPath("$.countryStats[0].count").exists()
-                .jsonPath("$.clicksPerDayPerDeviceType[0].day").exists()
-                .jsonPath("$.clicksPerDayPerDeviceType[0].deviceType").exists()
-                .jsonPath("$.clicksPerDayPerDeviceType[0].count").exists();
+                .jsonPath("$.clicksPerDayPerDeviceType[0].date").exists()
+                .jsonPath("$.clicksPerDayPerDeviceType[0].countsPerDeviceType").exists()
+                .jsonPath("$.clicksPerDayPerDeviceType[0].countsPerDeviceType.desktop").exists()
+                .jsonPath("$.clicksPerDayPerDeviceType[0].countsPerDeviceType.mobile").exists()
+                .jsonPath("$.clicksPerDayPerDeviceType[0].countsPerDeviceType.others").exists();
+
     }
 }
