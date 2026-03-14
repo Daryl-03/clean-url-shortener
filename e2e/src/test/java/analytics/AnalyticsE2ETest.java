@@ -9,6 +9,8 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import utils.AppConstants;
 import utils.HelperMethod;
 
+import java.time.Instant;
+
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest(
@@ -24,6 +26,62 @@ public class AnalyticsE2ETest {
     @Test
     @DisplayName("should retrieve analytics data for a shortlink")
     void shouldRetrieveAnalyticsDataForShortlink() {
+        String id = makeSomeAnalyticsdata();
+
+
+        // Retrieve analytics data
+        webTestClient.get()
+                .uri("/api/analytics/{id}", id)
+                .header("Authorization", "Bearer " + TOKEN)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.[0].id").exists()
+                .jsonPath("$.[0].timestamp").exists()
+                .jsonPath("$.[0].location").exists()
+                .jsonPath("$.[0].referer").exists()
+                .jsonPath("$.[0].device").exists()
+                .jsonPath("$.[0].device.browser").isEqualTo("FakeBrowser");
+    }
+
+    @Test
+    @DisplayName("should retrieve analytics data for a shortlink within date range")
+    void shouldRetrieveAnalyticsDataForShortlinkWithinDateRange() {
+        String id = makeSomeAnalyticsdata();
+
+
+        // Retrieve analytics data
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/analytics/{id}/ranged")
+                        .queryParam("from", Instant.now().minus(1, java.time.temporal.ChronoUnit.DAYS).toString())
+                        .queryParam("to", Instant.now())
+                        .build(id))
+                .header("Authorization", "Bearer " + TOKEN)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.[0].id").exists()
+                .jsonPath("$.[0].timestamp").exists()
+                .jsonPath("$.[0].location").exists()
+                .jsonPath("$.[0].referer").exists()
+                .jsonPath("$.[0].device").exists()
+                .jsonPath("$.[0].device.browser").isEqualTo("FakeBrowser")
+                .jsonPath("$.[4].id").exists();
+
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/analytics/{id}/ranged")
+                        .queryParam("from", Instant.now().minus(2, java.time.temporal.ChronoUnit.DAYS).toString())
+                        .queryParam("to", Instant.now().minus(1, java.time.temporal.ChronoUnit.DAYS).toString())
+                        .build(id))
+                .header("Authorization", "Bearer " + TOKEN)
+                .exchange()
+                .expectBody()
+                .jsonPath("$.[0].id").doesNotExist();
+    }
+
+    private String makeSomeAnalyticsdata() {
         String url = "https://example.com/some/long/path";
         String requestBody = """
                 {
@@ -37,25 +95,50 @@ public class AnalyticsE2ETest {
         assertNotNull(createResponse.data().getResponseBody());
         String id = (String) createResponse.data().getResponseBody().get("id");
         String shortCode = (String) createResponse.data().getResponseBody().get("shortCode");
+        String fakeUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3";
 
         // Resolve the shortlink multiple times to generate analytics data
         int resolveCount = 5;
         for (int i = 0; i < resolveCount; i++) {
             webTestClient.get()
                     .uri("/s/{shortcode}", shortCode)
+                    .header("User-Agent", fakeUserAgent)
+                    .header("referer", "https://referrer.com/page")
+                    .header("X-Forwarded-For", "10.10.101.10")
                     .exchange()
                     .expectStatus().is3xxRedirection();
         }
+        return id;
+    }
 
-        // Retrieve analytics data
+    @Test
+    @DisplayName("should return curated analytics data within date range")
+    void shouldReturnCuratedAnalyticsDataWithinDateRange() {
+        String id = makeSomeAnalyticsdata();
+
+        makeSomeAnalyticsdata();
+
+        // Retrieve curated analytics data
         webTestClient.get()
-                .uri("/api/analytics/{id}", id)
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/analytics/{id}/curated")
+                        .queryParam("from", Instant.now().minus(1, java.time.temporal.ChronoUnit.DAYS).toString())
+                        .queryParam("to", Instant.now())
+                        .build(id))
                 .header("Authorization", "Bearer " + TOKEN)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.[0].id").exists()
-                .jsonPath("$.[0].timestamp").exists();
+                .jsonPath("$.totalClicks").isEqualTo(5)
+                .jsonPath("$.browserStats[0].count").isEqualTo(5)
+                .jsonPath("$.browserStats[0].browser").isEqualTo("FakeBrowser")
+                .jsonPath("$.countryStats[0].countryName").exists()
+                .jsonPath("$.countryStats[0].count").exists()
+                .jsonPath("$.clicksPerDayPerDeviceType[0].date").exists()
+                .jsonPath("$.clicksPerDayPerDeviceType[0].countsPerDeviceType").exists()
+                .jsonPath("$.clicksPerDayPerDeviceType[0].countsPerDeviceType.desktop").exists()
+                .jsonPath("$.clicksPerDayPerDeviceType[0].countsPerDeviceType.mobile").exists()
+                .jsonPath("$.clicksPerDayPerDeviceType[0].countsPerDeviceType.others").exists();
 
     }
 }

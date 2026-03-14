@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
@@ -46,6 +47,9 @@ public class ShortlinkControllerTest {
     private UpdateShortlinkByIdUseCase updateShortlinkByIdUseCase;
     @MockitoBean
     private RetrieveAllShortlinksForUserUseCase retrieveAllShortlinksForUserUseCase;
+    @MockitoBean
+    private GetShortlinkByShortcodeUseCase getShortlinkByShortcodeUseCase;
+
 
     private final UUID userId = UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479");
 
@@ -137,6 +141,28 @@ public class ShortlinkControllerTest {
                 .andExpect(jsonPath("$.id").value(id.toString()));
 
         verify(getShortlinkByIdUseCase, times(1)).handle(id);
+    }
+
+    @Test
+    @DisplayName("Retrieve shortlink by shortcode when it exists")
+    void returnShortlinkByShortcodeWhenExists() throws Exception {
+        String originalUrl = "https://example.com/some/long/path";
+        String shortcode = "abc123";
+        UUID id = UUID.randomUUID();
+
+        when(getShortlinkByShortcodeUseCase.handle(shortcode)
+        ).thenReturn(new ShortlinkResponse(id, originalUrl, shortcode, Instant.now(), Instant.now()));
+
+        mockMvc.perform(get("/api/shortlinks/slug/{shortcode}", shortcode)
+                        .contentType(APPLICATION_JSON)
+                        .with(csrf())
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.originalUrl").value(originalUrl))
+                .andExpect(jsonPath("$.shortCode").value(shortcode))
+                .andExpect(jsonPath("$.id").value(id.toString()));
+
+        verify(getShortlinkByShortcodeUseCase, times(1)).handle(shortcode);
     }
 
     @Test

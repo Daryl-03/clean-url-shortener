@@ -4,14 +4,15 @@ import dev.richryl.shortlink.Shortlink;
 import dev.richryl.shortlink.application.ports.dto.ShortlinkResponse;
 import dev.richryl.shortlink.application.ports.out.ShortlinkRepository;
 
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class InMemoryShortlinkRepository implements ShortlinkRepository {
 
-        private final List<Shortlink> shortlinks = new ArrayList<>();
+    private final List<Shortlink> shortlinks = new CopyOnWriteArrayList<>();
 
     @Override
     public void save(Shortlink shortlink) {

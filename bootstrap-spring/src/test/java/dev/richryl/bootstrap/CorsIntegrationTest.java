@@ -20,7 +20,7 @@ class CorsIntegrationTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldReturnCorrectCorsHeadersForLocalProfile() throws Exception {
+    void   shouldReturnCorrectCorsHeadersForLocalProfile() throws Exception {
         mockMvc.perform(options("/api/shortlinks")
                         .header("Origin", "http://localhost:3000")
                         .header("Access-Control-Request-Method", "POST"))
@@ -37,6 +37,4 @@ class CorsIntegrationTest {
                         .header("Access-Control-Request-Method", "POST"))
                 .andExpect(status().isForbidden());
     }
-
-
 }

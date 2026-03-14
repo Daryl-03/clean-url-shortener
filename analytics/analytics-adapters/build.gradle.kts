@@ -18,7 +18,6 @@ configurations {
 
 dependencies {
     implementation(project(":analytics:analytics-application"))
-    implementation(project(":shortlink:shortlink-application"))
     implementation("org.springframework.boot:spring-boot-starter-security")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -26,6 +25,8 @@ dependencies {
 
     implementation("org.springframework.security:spring-security-oauth2-jose:7.0.0-RC3")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+    implementation("nl.basjes.parse.useragent:yauaa:7.32.0")
+    implementation("com.maxmind.geoip2:geoip2:5.0.0")
 
     testImplementation("org.springframework.security:spring-security-test")
 

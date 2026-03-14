@@ -104,6 +104,32 @@ public class ShortlinkE2ETest {
     }
 
     @Test
+    @DisplayName("Retrieve previously created shortlink by shortcode")
+    void retrievePreviouslyCreatedShortlinkShortcode() {
+        String requestBody = """
+                {
+                     "url": "%s"
+                }
+                """.formatted(DEFAULT_URL);
+        HelperMethod.ResponseData result = createShortlinkRequest(requestBody, webTestClient);
+
+        assertNotNull(result.data().getResponseBody());
+
+        String shortCode = (String) result.data().getResponseBody().get("shortCode");
+
+        assertNotNull(shortCode);
+
+        webTestClient.get()
+                .uri("/api/shortlinks/slug/{code}", shortCode)
+                .header("Authorization", "Bearer " + TOKEN)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.originalUrl").isEqualTo(DEFAULT_URL)
+                .jsonPath("$.shortCode").isEqualTo(shortCode);
+    }
+
+    @Test
     @DisplayName("Update previously created shortlink by id")
     void updatePreviouslyCreatedShortlinkById() {
         String requestBody = """
@@ -139,6 +165,8 @@ public class ShortlinkE2ETest {
                 .jsonPath("$.originalUrl").isEqualTo("https://example.com/updated/path");
 
     }
+
+
 
     @Test
     @DisplayName("When updating a non-existing shortlink, return 404 Not Found")

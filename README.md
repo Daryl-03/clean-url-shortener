@@ -18,6 +18,12 @@ The project demonstrates modular boundaries (Domain, Application, Adapters, Fram
 
 ---
 
+## 📚 Documentation & Frontend
+- **Frontend Repository:** [Lien vers le dépôt du frontend](https://github.com/Daryl-03/clean-url-shortener-ui)
+- **Documentation Externe:** [Consulter la documentation](https://deepwiki.com/Daryl-03/clean-url-shortener)
+
+---
+
 ## 🛠️ Tech stack
 - **Java 21**
 - **Gradle 8+ (KTS)**

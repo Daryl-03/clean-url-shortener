@@ -2,9 +2,10 @@ package dev.richryl.analytics.application.ports.in;
 
 import dev.richryl.analytics.application.ports.mocks.FakeClickEventRepository;
 import dev.richryl.analytics.domain.ClickEvent;
-import dev.richryl.identity.application.ports.dto.ClickEventResponse;
-import dev.richryl.identity.application.ports.in.RetrieveClickEventsUseCase;
-import dev.richryl.identity.application.ports.out.ClickEventRepository;
+import dev.richryl.analytics.domain.DeviceInfo;
+import dev.richryl.analytics.domain.GeoLocation;
+import dev.richryl.analytics.application.ports.dto.ClickEventResponse;
+import dev.richryl.analytics.application.ports.out.ClickEventRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,17 +29,26 @@ public class RetrieveClickEventsUseCaseTest {
                         new ClickEvent(
                                 UUID.randomUUID(),
                                 Instant.now(),
-                                firstShortlinkId
+                                firstShortlinkId,
+                                "referrer1",
+                                GeoLocation.unknown(),
+                                DeviceInfo.unknown()
                         ),
                         new ClickEvent(
                                 UUID.randomUUID(),
                                 Instant.now().plus(1, ChronoUnit.HOURS),
-                                firstShortlinkId
+                                firstShortlinkId,
+                                "referrer2",
+                                GeoLocation.unknown(),
+                                DeviceInfo.unknown()
                         ),
                         new ClickEvent(
                                 UUID.randomUUID(),
                                 Instant.now(),
-                                secondShortlinkId
+                                secondShortlinkId,
+                                "referrer3",
+                                GeoLocation.unknown(),
+                                DeviceInfo.unknown()
                         )
                 )
         );

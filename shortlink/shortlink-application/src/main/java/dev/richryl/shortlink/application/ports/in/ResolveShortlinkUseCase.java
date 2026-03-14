@@ -5,5 +5,5 @@ import dev.richryl.shortlink.application.exceptions.ShortlinkNotFoundException;
 import dev.richryl.shortlink.application.ports.dto.ShortlinkResponse;
 
 public interface ResolveShortlinkUseCase {
-    ShortlinkResponse handle(String shortCode) throws ShortlinkNotFoundException;
+    ShortlinkResponse handle(String shortcode) throws ShortlinkNotFoundException;
 }
