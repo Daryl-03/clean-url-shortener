@@ -19,8 +19,8 @@ The project demonstrates modular boundaries (Domain, Application, Adapters, Fram
 ---
 
 ## 📚 Documentation & Frontend
-- **Frontend Repository:** [Lien vers le dépôt du frontend](https://github.com/Daryl-03/clean-url-shortener-ui)
-- **Documentation Externe:** [Consulter la documentation](https://deepwiki.com/Daryl-03/clean-url-shortener)
+- **Frontend Repository:** [Frontend repo](https://github.com/Daryl-03/clean-url-shortener-ui)
+- **Documentation:** [Consult the documentation](https://deepwiki.com/Daryl-03/clean-url-shortener)
 
 ---
 
